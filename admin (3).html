@@ -1,0 +1,2215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoworkClub Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+/* ── THEMES ── */
+:root{
+  --bg:#0d1b2a;--bg2:#132236;--bg3:#1a2e47;--surface:#1e3652;
+  --border:rgba(255,255,255,0.08);
+  --accent:#c9a84c;--accent2:#e8c96b;
+  --text:#f0ead8;--text2:#9aafbe;--text3:#5a7488;
+  --nav-bg:rgba(13,27,42,0.96);
+  --pill-bg:rgba(201,168,76,0.12);--pill-text:#c9a84c;
+  --tab-act:rgba(201,168,76,0.13);
+  --danger:#e63946;--success:#2da882;
+}
+[data-theme="fresh"]{
+  --bg:#f7faf9;--bg2:#eef4f1;--bg3:#e3ede8;--surface:#fff;
+  --border:rgba(0,0,0,0.08);--accent:#1a7a5e;--accent2:#2da882;
+  --text:#0d2b22;--text2:#4a7060;--text3:#8aaa9a;
+  --nav-bg:rgba(247,250,249,0.96);
+  --pill-bg:rgba(26,122,94,0.1);--pill-text:#1a7a5e;
+  --tab-act:rgba(26,122,94,0.08);
+}
+[data-theme="bold"]{
+  --bg:#080808;--bg2:#101010;--bg3:#181818;--surface:#1c1c1c;
+  --border:rgba(255,255,255,0.06);--accent:#e63946;--accent2:#ff6b74;
+  --text:#f8f8f8;--text2:#888;--text3:#444;
+  --nav-bg:rgba(8,8,8,0.97);
+  --pill-bg:rgba(230,57,70,0.1);--pill-text:#e63946;
+  --tab-act:rgba(230,57,70,0.08);
+}
+
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+
+/* ── LOGIN PAGE ── */
+#loginPage{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:var(--bg);
+}
+.login-box{
+  background:var(--bg2);border:1px solid var(--border);
+  width:100%;max-width:400px;padding:2.5rem;
+}
+.login-logo{display:flex;align-items:center;gap:10px;margin-bottom:2rem}
+.login-logo-icon{width:40px;height:40px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:900;font-size:1.2rem;color:var(--bg)}
+.login-logo-text{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900}
+.login-title{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.5rem}
+.form-group{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem}
+.form-group label{font-size:.72rem;color:var(--text3);letter-spacing:.06em;text-transform:uppercase}
+.form-group input,.form-group select,.form-group textarea{
+  padding:.65rem .9rem;background:var(--bg3);border:1px solid var(--border);
+  color:var(--text);font-family:'Outfit',sans-serif;font-size:.85rem;
+  outline:none;transition:border-color .2s;width:100%;
+}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent)}
+.form-group input::placeholder,.form-group textarea::placeholder{color:var(--text3)}
+.form-group textarea{min-height:80px;resize:vertical}
+.btn{
+  padding:.65rem 1.4rem;font-family:'Outfit',sans-serif;font-size:.78rem;
+  font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  cursor:pointer;transition:opacity .2s,transform .15s;border:none;
+}
+.btn:hover{opacity:.85;transform:translateY(-1px)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-primary{background:var(--accent);color:var(--bg)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text2)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm{padding:.35rem .8rem;font-size:.7rem}
+.msg{font-size:.78rem;min-height:1.2rem;margin-top:.5rem}
+.msg.ok{color:var(--success)}
+.msg.err{color:var(--danger)}
+
+/* ── ADMIN LAYOUT ── */
+#adminPage{display:none;min-height:100vh}
+.admin-wrap{display:flex;min-height:100vh;padding-top:56px}
+
+/* Top bar */
+.admin-topbar{
+  position:fixed;top:0;left:0;right:0;height:56px;z-index:200;
+  background:var(--nav-bg);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 1.5rem;
+}
+.topbar-brand{display:flex;align-items:center;gap:10px}
+.topbar-logo{width:30px;height:30px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:900;font-size:.9rem;color:var(--bg)}
+.topbar-title{font-size:.82rem;font-weight:600;color:var(--text)}
+.topbar-sub{font-size:.62rem;color:var(--accent);letter-spacing:.08em;text-transform:uppercase}
+.topbar-right{display:flex;align-items:center;gap:.75rem}
+.topbar-user{font-size:.75rem;color:var(--text2)}
+.topbar-user span{color:var(--accent);font-weight:600}
+.theme-switcher{display:flex;gap:5px}
+.tbtn{width:18px;height:18px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .2s,border-color .2s}
+.tbtn:hover{transform:scale(1.2)}
+.tbtn.on{border-color:var(--text)}
+.tbtn[data-t="dark"] {background:linear-gradient(135deg,#0d1b2a,#c9a84c)}
+.tbtn[data-t="fresh"]{background:linear-gradient(135deg,#f7faf9,#1a7a5e)}
+.tbtn[data-t="bold"] {background:linear-gradient(135deg,#080808,#e63946)}
+
+/* Sidebar */
+.admin-sidebar{
+  width:220px;flex-shrink:0;background:var(--bg2);
+  border-right:1px solid var(--border);
+  position:fixed;top:56px;bottom:0;left:0;
+  overflow-y:auto;padding:1rem 0;
+}
+.sidebar-section{font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);padding:.75rem 1.2rem .3rem}
+.sidebar-item{
+  display:flex;align-items:center;gap:9px;
+  padding:.55rem 1.2rem;cursor:pointer;
+  font-size:.8rem;color:var(--text2);
+  transition:background .15s,color .15s;border:none;
+  background:transparent;width:100%;text-align:left;
+  font-family:'Outfit',sans-serif;
+}
+.sidebar-item:hover{background:var(--bg3);color:var(--text)}
+.sidebar-item.active{background:var(--tab-act);color:var(--accent);font-weight:600}
+.sidebar-item .si-icon{font-size:.95rem;width:18px;text-align:center}
+.sidebar-badge{margin-left:auto;background:var(--accent);color:var(--bg);font-size:.58rem;font-weight:700;padding:.1rem .4rem;border-radius:2px}
+
+/* Main content */
+.admin-main{margin-left:220px;flex:1;padding:1.5rem 2rem;min-height:calc(100vh - 56px)}
+
+/* ── DASHBOARD STATS ── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;margin-bottom:2rem}
+.stat-card{background:var(--surface);border:1px solid var(--border);padding:1.2rem;text-align:center}
+.stat-num{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--accent);line-height:1}
+.stat-label{font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:.4rem}
+
+/* ── SECTION HEADER ── */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;flex-wrap:wrap;gap:.5rem}
+.section-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900}
+.section-sub{font-size:.75rem;color:var(--text3);margin-top:.15rem}
+
+/* ── DATA TABLE ── */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+thead tr{background:var(--bg3)}
+th{padding:.7rem 1rem;text-align:left;font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border)}
+td{padding:.65rem 1rem;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg3);color:var(--text)}
+.td-actions{display:flex;gap:.4rem;white-space:nowrap}
+.badge{display:inline-block;font-size:.6rem;font-weight:700;padding:.18rem .5rem;letter-spacing:.06em;text-transform:uppercase}
+.badge-active{background:rgba(45,168,130,.15);color:var(--success);border:1px solid var(--success)}
+.badge-inactive{background:rgba(230,57,70,.1);color:var(--danger);border:1px solid var(--danger)}
+.badge-role{background:var(--pill-bg);color:var(--pill-text);border:1px solid var(--accent)}
+
+/* ── FORM PANEL ── */
+.form-panel{background:var(--bg2);border:1px solid var(--border);padding:1.5rem;margin-bottom:1.5rem;display:none}
+.form-panel.open{display:block}
+.form-panel-title{font-size:.9rem;font-weight:600;margin-bottom:1.2rem;display:flex;align-items:center;gap:.5rem}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+@media(max-width:700px){.form-row,.form-row-3{grid-template-columns:1fr}}
+
+/* ── EMPTY STATE ── */
+.empty{text-align:center;padding:3rem;color:var(--text3);font-size:.85rem}
+
+/* ── CONFIRM DIALOG ── */
+.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:600;display:none;align-items:center;justify-content:center}
+.confirm-overlay.open{display:flex}
+.confirm-box{background:var(--bg2);border:1px solid var(--border);padding:1.8rem;max-width:380px;width:100%;text-align:center}
+.confirm-box h4{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900;margin-bottom:.75rem}
+.confirm-box p{font-size:.82rem;color:var(--text2);margin-bottom:1.4rem}
+.confirm-actions{display:flex;gap:.75rem;justify-content:center}
+
+/* ── LOADING ── */
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-row td{text-align:center;padding:2rem;color:var(--text3)}
+
+/* ── IMAGE UPLOAD WIDGET ── */
+.img-upload-wrap{display:flex;flex-direction:column;gap:.5rem}
+.img-upload-row{display:flex;gap:.5rem;align-items:stretch}
+.img-upload-row input[type="text"]{flex:1}
+.upload-btn{
+  display:flex;align-items:center;gap:5px;
+  padding:.5rem .9rem;background:var(--bg3);border:1px solid var(--border);
+  color:var(--text2);font-family:'Outfit',sans-serif;font-size:.72rem;
+  font-weight:600;cursor:pointer;white-space:nowrap;transition:border-color .2s,color .2s;
+}
+.upload-btn:hover{border-color:var(--accent);color:var(--accent)}
+.upload-btn:disabled{opacity:.5;cursor:not-allowed}
+.upload-progress{
+  font-size:.72rem;color:var(--text3);display:none;align-items:center;gap:6px;
+}
+.upload-progress.show{display:flex}
+.upload-preview{
+  width:100%;height:100px;object-fit:cover;
+  border:1px solid var(--border);display:none;margin-top:.25rem;
+}
+.upload-preview.show{display:block}
+/* hidden file inputs */
+input[type="file"].hidden-file{display:none}
+
+/* scrollbar */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3)}
+</style>
+</head>
+<body data-theme="dark">
+
+<!-- ══ LOGIN PAGE ══ -->
+<div id="loginPage">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-icon">A</div>
+      <div class="login-logo-text">CoworkClub</div>
+    </div>
+    <div class="login-title">Admin Panel</div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="liEmail" placeholder="admin@example.com" autocomplete="email"/>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="liPass" placeholder="Password" autocomplete="current-password"
+             onkeydown="if(event.key==='Enter') doLogin()"/>
+    </div>
+    <button class="btn btn-primary" style="width:100%;margin-top:.5rem" id="liBtn" onclick="doLogin()">Sign In</button>
+    <div class="msg" id="liMsg"></div>
+    <div style="margin-top:1.2rem;text-align:center">
+      <a href="index.html" style="font-size:.75rem;color:var(--text3);text-decoration:none">← Back to CoworkClub</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ADMIN PAGE ══ -->
+<div id="adminPage">
+
+  <!-- Top Bar -->
+  <div class="admin-topbar">
+    <div class="topbar-brand">
+      <div class="topbar-logo">A</div>
+      <div>
+        <div class="topbar-title">CoworkClub Admin</div>
+        <div class="topbar-sub" id="topbarRole">Loading…</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-user">Signed in as <span id="topbarName"></span></div>
+      <div class="theme-switcher">
+        <div class="tbtn on" data-t="dark"  onclick="setTheme('dark',this)"></div>
+        <div class="tbtn"    data-t="fresh" onclick="setTheme('fresh',this)"></div>
+        <div class="tbtn"    data-t="bold"  onclick="setTheme('bold',this)"></div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()">Sign Out</button>
+      <a href="index.html" class="btn btn-ghost btn-sm">← Site</a>
+    </div>
+  </div>
+
+  <div class="admin-wrap">
+
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+      <div class="sidebar-section">Overview</div>
+      <button class="sidebar-item active" onclick="showSection('dashboard')">
+        <span class="si-icon">📊</span> Dashboard
+      </button>
+
+      <div class="sidebar-section">Clubs</div>
+      <button class="sidebar-item" onclick="showSection('clubs')">
+        <span class="si-icon">🏛️</span> Clubs
+      </button>
+      <button class="sidebar-item" onclick="showSection('categories')">
+        <span class="si-icon">📂</span> Categories
+      </button>
+      <button class="sidebar-item" onclick="showSection('cat_images')">
+        <span class="si-icon">🖼️</span> Category Images
+      </button>
+
+      <div class="sidebar-section">Products</div>
+      <button class="sidebar-item" onclick="showSection('products')">
+        <span class="si-icon">📦</span> Products
+      </button>
+      <button class="sidebar-item" onclick="showSection('prod_images')">
+        <span class="si-icon">🖼️</span> Product Images
+      </button>
+      <button class="sidebar-item" onclick="showSection('prod_users')">
+        <span class="si-icon">👥</span> Members
+      </button>
+
+      <div class="sidebar-section">Marketplace</div>
+      <button class="sidebar-item" onclick="showSection('shops')">
+        <span class="si-icon">🛍️</span> Shops
+      </button>
+      <button class="sidebar-item" onclick="showSection('shop_images')">
+        <span class="si-icon">🖼️</span> Shop Images
+      </button>
+      <button class="sidebar-item" onclick="showSection('shop_products')">
+        <span class="si-icon">🔗</span> Shop Products
+      </button>
+
+      <div class="sidebar-section">Delivery</div>
+      <button class="sidebar-item" onclick="showSection('routes')">
+        <span class="si-icon">🗺️</span> Routes
+      </button>
+      <button class="sidebar-item" onclick="showSection('waypoints')">
+        <span class="si-icon">📍</span> Waypoints
+      </button>
+      <button class="sidebar-item" onclick="showSection('movements')">
+        <span class="si-icon">🚚</span> Movements
+      </button>
+      <button class="sidebar-item" onclick="showSection('mov_products')">
+        <span class="si-icon">📦</span> Movement Products
+      </button>
+      <button class="sidebar-item" onclick="showSection('bookings')">
+        <span class="si-icon">🛒</span> Bookings
+      </button>
+      <button class="sidebar-item" onclick="showSection('agent_loc')">
+        <span class="si-icon">📡</span> Agent Locations
+      </button>
+
+      <div class="sidebar-section">Users</div>
+      <button class="sidebar-item" onclick="showSection('users')">
+        <span class="si-icon">👤</span> Users
+      </button>
+      <button class="sidebar-item" onclick="showSection('user_addresses')">
+        <span class="si-icon">🏠</span> User Addresses
+      </button>
+      <button class="sidebar-item" onclick="showSection('user_profiles')">
+        <span class="si-icon">🎓</span> Mentor Profiles
+      </button>
+    </div>
+
+    <!-- Main -->
+    <div class="admin-main" id="adminMain">
+      <div class="empty"><span class="spinner"></span> Loading…</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ CONFIRM DIALOG ══ -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <h4>Confirm Delete</h4>
+    <p id="confirmMsg">Are you sure you want to delete this record?</p>
+    <div class="confirm-actions">
+      <button class="btn btn-ghost" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-danger" id="confirmOkBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+// ══════════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════════
+const SB_URL  = 'https://czacuvklmuzvtzkvazhc.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6YWN1dmtsbXV6dnR6a3ZhemhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4OTkzOTMsImV4cCI6MjA4OTQ3NTM5M30.PheGFbsV1gTbih7zZmXuFgFQFtnEfIDKwxyE_eqYSnM';
+const _db = window.supabase.createClient(SB_URL, SB_ANON);
+
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+let adminUser    = null;
+let isSuperAdmin = false;
+let currentSection = 'dashboard';
+// Cache for dropdowns
+let _clubs = [], _categories = [], _products = [], _shops = [], _users = [];
+
+// ══════════════════════════════════════════════
+//  THEME
+// ══════════════════════════════════════════════
+function setTheme(t, btn){
+  document.body.setAttribute('data-theme', t);
+  document.querySelectorAll('.tbtn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  localStorage.setItem('cwc_theme', t);
+}
+const _savedTheme = localStorage.getItem('cwc_theme');
+if(_savedTheme) document.body.setAttribute('data-theme', _savedTheme);
+
+// ══════════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════════
+async function doLogin(){
+  const btn   = document.getElementById('liBtn');
+  const msg   = document.getElementById('liMsg');
+  const email = document.getElementById('liEmail').value.trim();
+  const pass  = document.getElementById('liPass').value;
+  if(!email||!pass){ msg.textContent='Please fill in all fields'; msg.className='msg err'; return; }
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Signing in…';
+  try {
+    const { data, error } = await _db.from('users').select('*')
+      .eq('email', email).eq('password', pass).limit(1);
+    if(error) throw error;
+    if(!data || !data.length){
+      msg.textContent = 'Invalid email or password'; msg.className='msg err';
+      btn.disabled = false; btn.textContent = 'Sign In'; return;
+    }
+    const user = data[0];
+    if(!['superadmin','clubadmin'].includes(user.role)){
+      msg.textContent = 'Access denied — admin role required'; msg.className='msg err';
+      btn.disabled = false; btn.textContent = 'Sign In'; return;
+    }
+    adminUser    = user;
+    isSuperAdmin = user.role === 'superadmin';
+    localStorage.setItem('cwc_admin', JSON.stringify(user));
+    enterAdmin();
+  } catch(e){
+    msg.textContent = e.message; msg.className='msg err';
+    btn.disabled = false; btn.textContent = 'Sign In';
+  }
+}
+
+function doLogout(){
+  localStorage.removeItem('cwc_admin');
+  adminUser = null;
+  document.getElementById('adminPage').style.display = 'none';
+  document.getElementById('loginPage').style.display = 'flex';
+}
+
+function enterAdmin(){
+  document.getElementById('loginPage').style.display  = 'none';
+  document.getElementById('adminPage').style.display  = 'block';
+  document.getElementById('topbarName').textContent   = adminUser.name || adminUser.email;
+  document.getElementById('topbarRole').textContent   = isSuperAdmin ? 'Super Admin' : 'Club Admin';
+  loadCaches().then(() => showSection('dashboard'));
+}
+
+// Restore session
+const _savedAdmin = localStorage.getItem('cwc_admin');
+if(_savedAdmin){
+  try {
+    adminUser    = JSON.parse(_savedAdmin);
+    isSuperAdmin = adminUser.role === 'superadmin';
+    document.addEventListener('DOMContentLoaded', ()=>{
+      if(adminUser) enterAdmin();
+    });
+  } catch(e){ localStorage.removeItem('cwc_admin'); }
+}
+
+// ══════════════════════════════════════════════
+//  CACHE LOOKUPS (for dropdowns)
+// ══════════════════════════════════════════════
+async function loadCaches(){
+  try {
+    let cq = _db.from('clubs').select('club_id,club_name,flag_emoji');
+    if(!isSuperAdmin) cq = cq.eq('club_id', adminUser.club_id);
+    const { data: clubs } = await cq;
+    _clubs = clubs || [];
+
+    const { data: cats  } = await _db.from('product_categories').select('category_id,category_name,club_id');
+    _categories = (cats || []).filter(c => isSuperAdmin || c.club_id === adminUser.club_id);
+
+    const { data: prods } = await _db.from('products').select('product_id,product_name,club_id');
+    _products = (prods || []).filter(p => isSuperAdmin || p.club_id === adminUser.club_id);
+
+    const { data: shps  } = await _db.from('shops').select('shop_id,shop_name,club_id');
+    _shops = (shps || []).filter(s => isSuperAdmin || s.club_id === adminUser.club_id);
+
+    const { data: usrs  } = await _db.from('users').select('user_id,name,email');
+    _users = usrs || [];
+  } catch(e){ console.warn('Cache load:', e.message); }
+}
+
+function clubName(id){ return _clubs.find(c=>c.club_id===id)?.club_name || id?.slice(0,8)+'…' || '—'; }
+function catName(id){ return _categories.find(c=>c.category_id===id)?.category_name || id?.slice(0,8)+'…' || '—'; }
+function prodName(id){ return _products.find(p=>p.product_id===id)?.product_name || id?.slice(0,8)+'…' || '—'; }
+function shopName(id){ return _shops.find(s=>s.shop_id===id)?.shop_name || id?.slice(0,8)+'…' || '—'; }
+function userName(id){ const u=_users.find(u=>u.user_id===id); return u ? (u.name||u.email) : id?.slice(0,8)+'…' || '—'; }
+
+function clubOpts(sel=''){
+  return _clubs.map(c=>`<option value="${c.club_id}" ${c.club_id===sel?'selected':''}>${c.flag_emoji||''} ${c.club_name}</option>`).join('');
+}
+function catOpts(sel='', clubId=''){
+  const list = clubId ? _categories.filter(c=>c.club_id===clubId) : _categories;
+  return list.map(c=>`<option value="${c.category_id}" ${c.category_id===sel?'selected':''}>${c.category_name}</option>`).join('');
+}
+function prodOpts(sel=''){
+  return _products.map(p=>`<option value="${p.product_id}" ${p.product_id===sel?'selected':''}>${p.product_name}</option>`).join('');
+}
+function shopOpts(sel=''){
+  return _shops.map(s=>`<option value="${s.shop_id}" ${s.shop_id===sel?'selected':''}>${s.shop_name}</option>`).join('');
+}
+
+// ══════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════
+function showSection(name){
+  currentSection = name;
+  document.querySelectorAll('.sidebar-item').forEach(b=>{
+    b.classList.toggle('active', b.getAttribute('onclick')===`showSection('${name}')`);
+  });
+  const fn = sections[name];
+  if(fn) fn();
+  else document.getElementById('adminMain').innerHTML = `<div class="empty">Section coming soon</div>`;
+}
+
+// ══════════════════════════════════════════════
+//  CONFIRM DIALOG
+// ══════════════════════════════════════════════
+let _confirmCb = null;
+function openConfirm(msg, cb){
+  document.getElementById('confirmMsg').textContent = msg;
+  document.getElementById('confirmOverlay').classList.add('open');
+  _confirmCb = cb;
+  document.getElementById('confirmOkBtn').onclick = ()=>{ closeConfirm(); cb(); };
+}
+function closeConfirm(){ document.getElementById('confirmOverlay').classList.remove('open'); _confirmCb=null; }
+
+// ══════════════════════════════════════════════
+//  GENERIC CRUD HELPERS
+// ══════════════════════════════════════════════
+function setMain(html){ document.getElementById('adminMain').innerHTML = html; }
+
+async function fetchRows(table, filters={}){
+  let q = _db.from(table).select('*');
+  Object.entries(filters).forEach(([k,v])=>{ q = q.eq(k,v); });
+  const { data, error } = await q;
+  if(error) throw error;
+  return data || [];
+}
+
+async function deleteRow(table, pkCol, pkVal, reloadFn){
+  const { error } = await _db.from(table).delete().eq(pkCol, pkVal);
+  if(error){ alert('Delete error: ' + error.message); return; }
+  await loadCaches();
+  reloadFn();
+}
+
+// ══════════════════════════════════════════════
+//  SECTION: DASHBOARD
+// ══════════════════════════════════════════════
+async function showDashboard(){
+  setMain(`<div class="empty"><span class="spinner"></span> Loading dashboard…</div>`);
+  try {
+    const clubFilter = isSuperAdmin ? {} : { club_id: adminUser.club_id };
+    const [clubs, cats, prods, shops, users, members, routes, movements, bookings] = await Promise.all([
+      fetchRows('clubs'),
+      fetchRows('product_categories', isSuperAdmin?{}:{club_id:adminUser.club_id}),
+      fetchRows('products', isSuperAdmin?{}:{club_id:adminUser.club_id}),
+      fetchRows('shops', isSuperAdmin?{}:{club_id:adminUser.club_id}),
+      fetchRows('users'),
+      fetchRows('product_users'),
+      fetchRows('routes', isSuperAdmin?{}:{club_id:adminUser.club_id}),
+      fetchRows('route_movements'),
+      fetchRows('route_bookings'),
+    ]);
+    setMain(`
+      <div class="section-header">
+        <div><div class="section-title">Dashboard</div><div class="section-sub">Live overview</div></div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-num">${clubs.length}</div><div class="stat-label">Clubs</div></div>
+        <div class="stat-card"><div class="stat-num">${cats.length}</div><div class="stat-label">Categories</div></div>
+        <div class="stat-card"><div class="stat-num">${prods.length}</div><div class="stat-label">Products</div></div>
+        <div class="stat-card"><div class="stat-num">${shops.length}</div><div class="stat-label">Shops</div></div>
+        <div class="stat-card"><div class="stat-num">${users.length}</div><div class="stat-label">Users</div></div>
+        <div class="stat-card"><div class="stat-num">${members.length}</div><div class="stat-label">Memberships</div></div>
+        <div class="stat-card"><div class="stat-num">${routes.length}</div><div class="stat-label">Routes</div></div>
+        <div class="stat-card"><div class="stat-num">${movements.filter(m=>m.status==='scheduled').length}</div><div class="stat-label">Scheduled Trips</div></div>
+        <div class="stat-card"><div class="stat-num">${bookings.filter(b=>b.status==='pending').length}</div><div class="stat-label">Pending Orders</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div style="background:var(--surface);border:1px solid var(--border);padding:1.2rem">
+          <div style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:.75rem">Recent Users</div>
+          ${users.slice(-5).reverse().map(u=>`
+            <div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid var(--border);font-size:.78rem">
+              <span>${u.name||'—'}</span>
+              <span style="color:var(--text3)">${u.email}</span>
+            </div>`).join('')}
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);padding:1.2rem">
+          <div style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:.75rem">Recent Bookings</div>
+          ${bookings.slice(0,5).map(b=>`
+            <div style="display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid var(--border);font-size:.78rem">
+              <span>${userName(b.customer_id)}</span>
+              <span class="badge ${b.status==='pending'?'badge-role':b.status==='delivered'?'badge-active':'badge-inactive'}">${b.status}</span>
+            </div>`).join('')||'<div style="color:var(--text3);font-size:.78rem;padding:.5rem 0">No bookings yet</div>'}
+        </div>
+      </div>`);
+  } catch(e){ setMain(`<div class="empty">Error: ${e.message}</div>`); }
+}
+
+// ══════════════════════════════════════════════
+//  SECTION: CLUBS
+// ══════════════════════════════════════════════
+async function showClubs(){
+  setMain(`<div class="empty"><span class="spinner"></span> Loading…</div>`);
+  try {
+    const rows = await fetchRows('clubs');
+    setMain(`
+      <div class="section-header">
+        <div><div class="section-title">Clubs</div><div class="section-sub">${rows.length} regions</div></div>
+        ${isSuperAdmin?`<button class="btn btn-primary btn-sm" onclick="openClubForm()">+ Add Club</button>`:''}
+      </div>
+      <div class="form-panel" id="clubForm">
+        <div class="form-panel-title">✏️ <span id="clubFormTitle">Add Club</span></div>
+        <input type="hidden" id="cfId"/>
+        <div class="form-row">
+          <div class="form-group"><label>Club Name</label><input id="cfName" placeholder="e.g. Aryaprabha CoworkClub"/></div>
+          <div class="form-group"><label>Flag Emoji</label><input id="cfFlag" placeholder="🇮🇳"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Status</label>
+            <select id="cfStatus">
+              <option value="active">Active</option>
+              <option value="launching">Launching</option>
+              <option value="upcoming">Upcoming</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Country</label><input id="cfCountry" placeholder="India"/></div>
+        </div>
+        <div class="form-group"><label>Description</label><textarea id="cfDesc" placeholder="Brief description"></textarea></div>
+        <div style="display:flex;gap:.75rem;align-items:center">
+          <button class="btn btn-primary" onclick="saveClub()">Save</button>
+          <button class="btn btn-ghost" onclick="closeForm('clubForm')">Cancel</button>
+          <span class="msg" id="cfMsg"></span>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Flag</th><th>Name</th><th>Status</th><th>Country</th>${isSuperAdmin?'<th>Actions</th>':''}</tr></thead>
+          <tbody>${rows.map(r=>`
+            <tr>
+              <td>${r.flag_emoji||'—'}</td>
+              <td style="font-weight:500;color:var(--text)">${r.club_name}</td>
+              <td><span class="badge ${r.status==='active'?'badge-active':'badge-inactive'}">${r.status||'—'}</span></td>
+              <td>${r.country||'—'}</td>
+              ${isSuperAdmin?`<td class="td-actions">
+                <button class="btn btn-ghost btn-sm" onclick='editClub(${JSON.stringify(r)})'>Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="confirmDelete('clubs','club_id','${r.club_id}',showClubs)">Delete</button>
+              </td>`:''}
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`);
+  } catch(e){ setMain(`<div class="empty">Error: ${e.message}</div>`); }
+}
+
+function openClubForm(){ document.getElementById('clubFormTitle').textContent='Add Club'; document.getElementById('cfId').value=''; document.getElementById('cfName').value=''; document.getElementById('cfFlag').value=''; document.getElementById('cfDesc').value=''; document.getElementById('cfStatus').value='active'; document.getElementById('cfCountry').value=''; document.getElementById('clubForm').classList.add('open'); }
+function editClub(r){ document.getElementById('clubFormTitle').textContent='Edit Club'; document.getElementById('cfId').value=r.club_id; document.getElementById('cfName').value=r.club_name||''; document.getElementById('cfFlag').value=r.flag_emoji||''; document.getElementById('cfDesc').value=r.description||''; document.getElementById('cfStatus').value=r.status||'active'; document.getElementById('cfCountry').value=r.country||''; document.getElementById('clubForm').classList.add('open'); }
+async function saveClub(){
+  const msg=document.getElementById('cfMsg'), id=document.getElementById('cfId').value;
+  const payload={ club_name:document.getElementById('cfName').value.trim(), flag_emoji:document.getElementById('cfFlag').value.trim(), status:document.getElementById('cfStatus').value, country:document.getElementById('cfCountry').value.trim(), description:document.getElementById('cfDesc').value.trim() };
+  if(!payload.club_name){ msg.textContent='Name required'; msg.className='msg err'; return; }
+  msg.textContent='Saving…'; msg.className='msg';
+  const { error } = id ? await _db.from('clubs').update(payload).eq('club_id',id) : await _db.from('clubs').insert(payload);
+  if(error){ msg.textContent=error.message; msg.className='msg err'; return; }
+  await loadCaches(); closeForm('clubForm'); showClubs();
+}
+
+// ══════════════════════════════════════════════
+//  SECTION: CATEGORIES
+// ══════════════════════════════════════════════
+async function showCategories(){
+  setMain(`<div class="empty"><span class="spinner"></span> Loading…</div>`);
+  try {
+    let q = _db.from('product_categories').select('*').order('sort_order');
+    if(!isSuperAdmin) q = q.eq('club_id', adminUser.club_id);
+    const { data: rows, error } = await q;
+    if(error) throw error;
+    setMain(`
+      <div class="section-header">
+        <div><div class="section-title">Product Categories</div><div class="section-sub">${(rows||[]).length} categories</div></div>
+        <button class="btn btn-primary btn-sm" onclick="openCatForm()">+ Add Category</button>
+      </div>
+      <div class="form-panel" id="catForm">
+        <div class="form-panel-title">✏️ <span id="catFormTitle">Add Category</span></div>
+        <input type="hidden" id="catId"/>
+        <div class="form-row">
+          <div class="form-group"><label>Category Name</label><input id="catName" placeholder="e.g. Meetup Club"/></div>
+          <div class="form-group"><label>Club</label><select id="catClub"><option value="">— Select Club —</option>${clubOpts()}</select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Slug</label><input id="catSlug" placeholder="e.g. meetup"/></div>
+          <div class="form-group"><label>Icon Emoji</label><input id="catIcon" placeholder="🤝"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>One Word</label><input id="catOneWord" placeholder="Connect"/></div>
+          <div class="form-group"><label>Sort Order</label><input type="number" id="catSort" placeholder="0"/></div>
+        </div>
+        <div class="form-group"><label>Tagline</label><input id="catTagline" placeholder="Short tagline"/></div>
+        <div class="form-group"><label>Description</label><textarea id="catDesc"></textarea></div>
+        <div style="display:flex;gap:.75rem;align-items:center">
+          <button class="btn btn-primary" onclick="saveCat()">Save</button>
+          <button class="btn btn-ghost" onclick="closeForm('catForm')">Cancel</button>
+          <span class="msg" id="catMsg"></span>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Icon</th><th>Name</th><th>Slug</th><th>Club</th><th>Sort</th><th>Actions</th></tr></thead>
+          <tbody>${(rows||[]).map(r=>`
+            <tr>
+              <td style="font-size:1.2rem">${r.icon_emoji||'—'}</td>
+              <td style="font-weight:500;color:var(--text)">${r.category_name}</td>
+              <td><code style="font-size:.72rem;color:var(--accent)">${r.slug||'—'}</code></td>
+              <td>${clubName(r.club_id)}</td>
+              <td>${r.sort_order||0}</td>
+              <td class="td-actions">
+                <button class="btn btn-ghost btn-sm" onclick='editCat(${JSON.stringify(r)})'>Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="confirmDelete('product_categories','category_id','${r.category_id}',showCategories)">Delete</button>
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`);
+  } catch(e){ setMain(`<div class="empty">Error: ${e.message}</div>`); }
+}
+
+function openCatForm(){ document.getElementById('catFormTitle').textContent='Add Category'; ['catId','catName','catSlug','catIcon','catOneWord','catTagline','catDesc'].forEach(id=>document.getElementById(id).value=''); document.getElementById('catSort').value='0'; document.getElementById('catClub').value=isSuperAdmin?'':adminUser.club_id; document.getElementById('catForm').classList.add('open'); }
+function editCat(r){ document.getElementById('catFormTitle').textContent='Edit Category'; document.getElementById('catId').value=r.category_id; document.getElementById('catName').value=r.category_name||''; document.getElementById('catSlug').value=r.slug||''; document.getElementById('catIcon').value=r.icon_emoji||''; document.getElementById('catOneWord').value=r.one_word||''; document.getElementById('catTagline').value=r.tagline||''; document.getElementById('catDesc').value=r.description||''; document.getElementById('catSort').value=r.sort_order||0; document.getElementById('catClub').value=r.club_id||''; document.getElementById('catForm').classList.add('open'); }
+async function saveCat(){
+  const msg=document.getElementById('catMsg'), id=document.getElementById('catId').value;
+  const payload={ category_name:document.getElementById('catName').value.trim(), slug:document.getElementById('catSlug').value.trim(), icon_emoji:document.getElementById('catIcon').value.trim(), one_word:document.getElementById('catOneWord').value.trim(), tagline:document.getElementById('catTagline').value.trim(), description:document.getElementById('catDesc').value.trim(), sort_order:parseInt(document.getElementById('catSort').value)||0, club_id:document.getElementById('catClub').value, is_predefined:true };
+  if(!payload.category_name||!payload.club_id){ msg.textContent='Name and Club required'; msg.className='msg err'; return; }
+  msg.textContent='Saving…'; msg.className='msg';
+  const { error } = id ? await _db.from('product_categories').update(payload).eq('category_id',id) : await _db.from('product_categories').insert(payload);
+  if(error){ msg.textContent=error.message; msg.className='msg err'; return; }
+  await loadCaches(); closeForm('catForm'); showCategories();
+}
+
+// ══════════════════════════════════════════════
+//  SECTION: CATEGORY IMAGES
+// ══════════════════════════════════════════════
+async function showCatImages(){
+  setMain(`<div class="empty"><span class="spinner"></span> Loading…</div>`);
+  try {
+    let q = _db.from('product_category_images').select('*').order('sort_order');
+    const { data: rows, error } = await q;
+    if(error) throw error;
+    setMain(`
+      <div class="section-header">
+        <div><div class="section-title">Category Images</div><div class="section-sub">Slider images per category</div></div>
+        <button class="btn btn-primary btn-sm" onclick="openCatImgForm()">+ Add Image</button>
+      </div>
+      <div class="form-panel" id="catImgForm">
+        <div class="form-panel-title">✏️ <span id="catImgFormTitle">Add Image</span></div>
+        <input type="hidden" id="ciId"/>
+        <div class="form-row">
+          <div class="form-group"><label>Category</label><select id="ciCat"><option value="">— Select —</option>${catOpts()}</select></div>
+          <div class="form-group"><label>Sort Order</label><input type="number" id="ciSort" value="0"/></div>
+        </div>
+        <div class="form-group">
+          <label>Image</label>
+          <div class="img-upload-wrap">
+            <div class="img-upload-row">
+              <input type="text" id="ciUrl" placeholder="https://… or upload below"/>
+              <button type="button" class="upload-btn" onclick="triggerUpload('ciFile')">📁 Upload</button>
+              <input type="file" id="ciFile" class="hidden-file" accept="image/*" onchange="uploadImage(this,'ciUrl','ciPreview','ciProgress','categories')"/>
+            </div>
+            <div class="upload-progress" id="ciProgress"><span class="spinner"></span> Uploading…</div>
+            <img id="ciPreview" class="upload-preview" src="" alt="preview"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Title</label><input id="ciTitle" placeholder="Slide title"/></div>
+          <div class="form-group"><label>Subtitle</label><input id="ciSub" placeholder="Slide subtitle"/></div>
+        </div>
+        <div style="display:flex;gap:.75rem;align-items:center">
+          <button class="btn btn-primary" onclick="saveCatImg()">Save</button>
+          <button class="btn btn-ghost" onclick="closeForm('catImgForm')">Cancel</button>
+          <span class="msg" id="ciMsg"></span>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Preview</th><th>Category</th><th>Title</th><th>Sort</th><th>Actions</th></tr></thead>
+          <tbody>${(rows||[]).map(r=>`
+            <tr>
+              <td>${r.image_url?`<img src="${r.image_url}" style="width:60px;height:36px;object-fit:cover;border:1px solid var(--border)"/>`:'—'}</td>
+              <td>${catName(r.category_id)}</td>
+              <td>${r.title||'—'}</td>
+              <td>${r.sort_order||0}</td>
+              <td class="td-actions">
+                <button class="btn btn-ghost btn-sm" onclick='editCatImg(${JSON.stringify(r)})'>Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="confirmDelete('product_category_images','image_id','${r.image_id}',showCatImages)">Delete</button>
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`);
+  } catch(e){ setMain(`<div class="empty">Error: ${e.message}</div>`); }
+}
+
+function openCatImgForm(){ document.getElementById('catImgFormTitle').textContent='Add Image'; ['ciId','ciUrl','ciTitle','ciSub'].forEach(id=>document.getElementById(id).value=''); document.getElementById('ciSort').value='0'; resetUploadWidget('ciUrl','ciPreview','ciProgress'); document.getElementById('catImgForm').classList.add('open'); }
+function editCatImg(r){ document.getElementById('catImgFormTitle').textContent='Edit Image'; document.getElementById('ciId').value=r.image_id; document.getElementById('ciCat').value=r.category_id||''; document.getElementById('ciUrl').value=r.image_url||''; document.getElementById('ciTitle').value=r.title||''; document.getElementById('ciSub').value=r.subtitle||''; document.getElementById('ciSort').value=r.sort_order||0; showExistingPreview(r.image_url,'ciPreview'); document.getElementById('catImgForm').classList.add('open'); }
+async function saveCatImg(){
+  const msg=document.getElementById('ciMsg'), id=document.getElementById('ciId').value;
+  const payload={ category_id:document.getElementById('ciCat').value, image_url:document.getElementById('ciUrl').value.trim(), title:document.getElementById('ciTitle').value.trim(), subtitle:document.getElementById('ciSub').value.trim(), sort_order:parseInt(document.getElementById('ciSort').value)||0, is_active:true };
+  if(!payload.category_id||!payload.image_url){ msg.textContent='Category and URL required'; msg.className='msg err'; return; }
+  msg.textContent='Saving…'; msg.className='msg';
+  const { error } = id ? await _db.from('product_category_images').update(payload).eq('image_id',id) : await _db.from('product_category_images').insert(payload);
+  if(error){ msg.textContent=error.message; msg.className='msg err'; return; }
+  closeForm('catImgForm'); showCatImages();
+}
+
+// ══════════════════════════════════════════════
+//  SECTION: PRODUCTS
+// ══════════════════════════════════════════════
+async function showProducts(){
+  setMain(`<div class="empty"><span class="spinner"></span> Loading…</div>`);
+  try {
+    let q = _db.from('products').select('*');
+    if(!isSuperAdmin) q = q.eq('club_id', adminUser.club_id);
+    const { data: rows, error } = await q;
+    if(error) throw error;
+    setMain(`
+      <div class="section-header">
+        <div><div class="section-title">Products</div><div class="section-sub">${(rows||[]).length} products</div></div>
+        <button class="btn btn-primary btn-sm" onclick="openProdForm()">+ Add Product</button>
+      </div>
+      <div class="form-panel" id="prodForm">
+        <div class="form-panel-title">✏️ <span id="prodFormTitle">Add Product</span></div>
+        <input type="hidden" id="pfId"/>
+        <div class="form-row">
+          <div class="form-group"><label>Product Name</label><input id="pfName" placeholder="Product name"/></div>
+          <div class="form-group"><label>Club</label><select id="pfClub" onchange="updateCatDropdown()"><option value="">— Select Club —</option>${clubOpts()}</select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Category</label><select id="pfCat"><option value="">— Select Category —</option>${catOpts()}</select></div>
+          <div class="form-group"><label>Service Type</label>
+            <select id="pfSvc">
+              <option value="E">E — Community (Enrollment)</option>
+              <option value="S">S — Service (Buy)</option>
+              <option value="B">B — Book (Booking)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Price (₹)</label><input type="number" id="pfPrice" value="0" min="0"/></div>
+          <div class="form-group"><label>UOM</label><input id="pfUom" placeholder="per session, per month…"/></div>
+        </div>
+        <div class="form-group"><label>Description</label><textarea id="pfDesc"></textarea></div>
+        <div style="display:flex;gap:.75rem;align-items:center">
+          <button class="btn btn-primary" onclick="saveProd()">Save</button>
+          <button class="btn btn-ghost" onclick="closeForm('prodForm')">Cancel</button>
+          <span class="msg" id="pfMsg"></span>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Category</th><th>Type</th><th>Price</th><th>Actions</th></tr></thead>
+          <tbody>${(rows||[]).map(r=>`
+            <tr>
+              <td style="font-weight:500;color:var(--text)">${r.product_name||'—'}</td>
+              <td>${catName(r.category_id)}</td>
+              <td><span class="badge badge-role">${r.service_type||'—'}</span></td>
+              <td>${r.price?'₹'+Number(r.price).toLocaleString('en-IN'):'Free'}</td>
+              <td class="td-actions">
+                <button class="btn btn-ghost btn-sm" onclick='editProd(${JSON.stringify(r)})'>Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="confirmDelete('products','product_id','${r.product_id}',showProducts)">Delete</button>
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`);
+  } catch(e){ setMain(`<div class="empty">Error: ${e.message}</div>`); }
+}
+
+function updateCatDropdown(){ const clubId=document.getElementById('pfClub')?.value||''; document.getElementById('pfCat').innerHTML='<option value="">— Select Category —</option>'+catOpts('',clubId); }
+function openProdForm(){ document.getElementById('prodFormTitle').textContent='Add Product'; ['pfId','pfName','pfDesc','pfUom'].forEach(id=>document.getElementById(id).value=''); document.getElementById('pfPrice').value='0'; document.getElementById('pfSvc').value='E'; document.getElementById('pfClub').value=isSuperAdmin?'':adminUser.club_id; updateCatDropdown(); document.getElementById('prodForm').classList.add('open'); }
+function editProd(r){ document.getElementById('prodFormTitle').textContent='Edit Product'; document.getElementById('pfId').value=r.product_id; document.getElementById('pfName').value=r.product_name||''; document.getElementById('pfDesc').value=r.description||''; document.getElementById('pfPrice').value=r.price||0; document.getElementById('pfUom').value=r.uom||''; document.getElementById('pfSvc').value=r.service_type||'E'; document.getElementById('pfClub').value=r.club_id||''; updateCatDropdown(); document.getElementById('pfCat').value=r.category_id||''; document.getElementById('prodForm').classList.add('open'); }
+async function saveProd(){
+  const msg=document.getElementById('pfMsg'), id=document.getElementById('pfId').value;
+  const payload={ product_name:document.getElementById('pfName').value.trim(), description:document.getElementById('pfDesc').value.trim(), price:parseFloat(document.getElementById('pfPrice').value)||0, uom:document.getElementById('pfUom').value.trim(), service_type:document.getElementById('pfSvc').value, category_id:document.getElementById('pfCat').value, club_id:document.getElementById('pfClub').value };
+  if(!payload.product_name||!payload.club_id||!payload.category_id){ msg.textContent='Name, Club and Category required'; msg.className='msg err'; return; }
+  msg.textContent='Saving…'; msg.className='msg';
+  const { error } = id ? await _db.from('products').update(payload).eq('product_id',id) : await _db.from('products').insert(payload);
+  if(error){ msg.textContent=error.message; msg.className='msg err'; return; }
+  await loadCaches(); closeForm('prodForm'); showProducts();
+}
+
+// ══════════════════════════════════════════════
+//  SECTION: PRODUCT IMAGES
+// ══════════════════════════════════════════════
+async function showProdImages(){
+  setMain(`<div class="empty"><span class="spinner"></span> Loading…</div>`);
+  try {
+    const { data: rows, error } = await _db.from('product_images').select('*').order('sort_order');
+    if(error) throw error;
+    setMain(`
+      <div class="section-header">
+        <div><div class="section-title">Product Images</div><div class="section-sub">${(rows||[]).length} images</div></div>
+        <button class="btn btn-primary btn-sm" onclick="openProdImgForm()">+ Add Image</button>
+      </div>
+      <div class="form-panel" id="prodImgForm">
+        <div class="form-panel-title">✏️ <span id="prodImgFormTitle">Add Image</span></div>
+        <input type="hidden" id="piId"/>
+        <div class="form-row">
+          <div class="form-group"><label>Product</label><select id="piProd"><option value="">— Select Product —</option>${prodOpts()}</select></div>
+          <div class="form-group"><label>Sort Order</label><input type="number" id="piSort" value="0"/></div>
+        </div>
+        <div class="form-group">
+          <label>Image</label>
+          <div class="img-upload-wrap">
+            <div class="img-upload-row">
+              <input type="text" id="piUrl" placeholder="https://… or upload below"/>
+              <button type="button" class="upload-btn" onclick="triggerUpload('piFile')">📁 Upload</button>
+              <input type="file" id="piFile" class="hidden-file" accept="image/*" onchange="uploadImage(this,'piUrl','piPreview','piProgress','products')"/>
+            </div>
+            <div class="upload-progress" id="piProgress"><span class="spinner"></span> Uploading…</div>
+            <img id="piPreview" class="upload-preview" src="" alt="preview"/>
+          </div>
+        </div>
+        <div class="form-group"><label>Caption</label><input id="piCaption" placeholder="Optional caption"/></div>
+        <div style="display:flex;gap:.75rem;align-items:center">
+          <button class="btn btn-primary" onclick="saveProdImg()">Save</button>
+          <button class="btn btn-ghost" onclick="closeForm('prodImgForm')">Cancel</button>
+          <span class="msg" id="piMsg"></span>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Preview</th><th>Product</th><th>Caption</th><th>Sort</th><th>Actions</th></tr></thead>
+          <tbody>${(rows||[]).map(r=>`
+            <tr>
+              <td>${r.image_url?`<img src="${r.image_url}" style="width:60px;height:36px;object-fit:cover;border:1px solid var(--border)"/>`:'—'}</td>
+              <td>${prodName(r.product_id)}</td>
+              <td>${r.caption||'—'}</td>
+              <td>${r.sort_order||0}</td>
+              <td class="td-actions">
+                <button class="btn btn-ghost btn-sm" onclick='editProdImg(${JSON.stringify(r)})'>Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="confirmDelete('product_images','image_id','${r.image_id}',showProdImages)">Delete</button>
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`);
+  } catch(e){ setMain(`<div class="empty">Error: ${e.message}</div>`); }
+}
+
+function openProdImgForm(){ document.getElementById('prodImgFormTitle').textContent='Add Image'; ['piId','piUrl','piCaption'].forEach(id=>document.getElementById(id).value=''); document.getElementById('piSort').value='0'; resetUploadWidget('piUrl','piPreview','piProgress'); document.getElementById('prodImgForm').classList.add('open'); }
+function editProdImg(r){ document.getElementById('prodImgFormTitle').textContent='Edit Image'; document.getElementById('piId').value=r.image_id; document.getElementById('piProd').value=r.product_id||''; document.getElementById('piUrl').value=r.image_url||''; document.getElementById('piCaption').value=r.caption||''; document.getElementById('piSort').value=r.sort_order||0; showExistingPreview(r.image_url,'piPreview'); document.getElementById('prodImgForm').classList.add('open'); }
+async function saveProdImg(){
+  const msg=document.getElementById('piMsg'), id=document.getElementById('piId').value;
+  const payload={ product_id:document.getElementById('piProd').value, image_url:document.getElementById('piUrl').value.trim(), caption:document.getElementById('piCaption').value.trim(), sort_order:parseInt(document.getElementById('piSort').value)||0 };
+  if(!payload.product_id||!payload.image_url){ msg.textContent='Product and URL required'; msg.className='msg err'; return; }
+  msg.textContent='Saving…'; msg.className='msg';
+  const { error } = id ? await _db.from('product_images').update(payload).eq('image_id',id) : await _db.from('product_images').insert(payload);
+  if(error){ msg.textContent=error.message; msg.className='msg err'; return; }
+  closeForm('prodImgForm'); showProdImages();
+}
+
+// ══════════════════════════════════════════════
+//  SECTION: MEMBERS (product_users)
+// ══════════════════════════════════════════════
+async function showProdUsers(){
+  setMain(`<div class="empty"><span class="spinner"></span> Loading…</div>`);
+  try {
+    const { data: rows, error } = await _db.from('product_users').select('*');
+    if(error) throw error;
+    setMain(`
+      <div class="section-header">
+        <div><div class="section-title">Community Members</div><div class="section-sub">${(rows||[]).length} memberships</div></div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>User</th><th>Product</th><th>Admin</th><th>Joined</th><th>Actions</th></tr></thead>
+          <tbody>${(rows||[]).map(r=>`
+            <tr>
+              <td>${userName(r.user_id)}</td>
+              <td>${prodName(r.product_id)}</td>
+              <td>${r.is_admin?'<span class="badge badge-active">Admin</span>':'<span class="badge badge-inactive">Member</span>'}</td>
+              <td style="color:var(--text3)">${r.joined_at?new Date(r.joined_at).toLocaleDateString():'—'}</td>
+              <td class="td-actions">
+                <button class="btn btn-danger btn-sm" onclick="confirmDelete('product_users','product_user_id','${r.product_user_id}',showProdUsers)">Remove</button>
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`);
+  } catch(e){ setMain(`<div class="empty">Error: ${e.message}</div>`); }
+}
+
+// ══════════════════════════════════════════════
+//  SECTION: SHOPS
+// ══════════════════════════════════════════════
+async function showShops(){
+  setMain(`<div class="empty"><span class="spinner"></span> Loading…</div>`);
+  try {
+    let q = _db.from('shops').select('*');
+    if(!isSuperAdmin) q = q.eq('club_id', adminUser.club_id);
+    const { data: rows, error } = await q;
+    if(error) throw error;
+    setMain(`
+      <div class="section-header">
+        <div><div class="section-title">Shops</div><div class="section-sub">${(rows||[]).length} shops</div></div>
+        <button class="btn btn-primary btn-sm" onclick="openShopForm()">+ Add Shop</button>
+      </div>
+      <div class="form-panel" id="shopForm">
+        <div class="form-panel-title">✏️ <span id="shopFormTitle">Add Shop</span></div>
+        <input type="hidden" id="sfId"/>
+        <div class="form-row">
+          <div class="form-group"><label>Shop Name</label><input id="sfName" placeholder="Shop name"/></div>
+          <div class="form-group"><label>Club</label><select id="sfClub"><option value="">— Select Club —</option>${clubOpts()}</select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Type</label>
+            <select id="sfType">
+              <option value="physical">Physical</option>
+              <option value="onwheel">On the Wheel</option>
+              <option value="online">Online</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Contact</label><input id="sfContact" placeholder="Phone / Email"/></div>
+        </div>
+        <div class="form-group"><label>Address</label><input id="sfAddress" placeholder="Full address"/></div>
+        <div class="form-group"><label>Description</label><textarea id="sfDesc"></textarea></div>
+        <div style="display:flex;gap:.75rem;align-items:center">
+          <button class="btn btn-primary" onclick="saveShop()">Save</button>
+          <button class="btn btn-ghost" onclick="closeForm('shopForm')">Cancel</button>
+          <span class="msg" id="sfMsg"></span>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Club</th><th>Type</th><th>Contact</th><th>Actions</th></tr></thead>
+          <tbody>${(rows||[]).map(r=>`
+            <tr>
+              <td style="font-weight:500;color:var(--text)">${r.shop_name}</td>
+              <td>${clubName(r.club_id)}</td>
+              <td><span class="badge badge-role">${r.shop_type||'—'}</span></td>
+              <td>${r.contact||'—'}</td>
+              <td class="td-actions">
+                <button class="btn btn-ghost btn-sm" onclick='editShop(${JSON.stringify(r)})'>Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="confirmDelete('shops','shop_id','${r.shop_id}',showShops)">Delete</button>
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`);
+  } catch(e){ setMain(`<div class="empty">Error: ${e.message}</div>`); }
+}
+
+function openShopForm(){ document.getElementById('shopFormTitle').textContent='Add Shop'; ['sfId','sfName','sfContact','sfAddress','sfDesc'].forEach(id=>document.getElementById(id).value=''); document.getElementById('sfType').value='physical'; document.getElementById('sfClub').value=isSuperAdmin?'':adminUser.club_id; document.getElementById('shopForm').classList.add('open'); }
+function editShop(r){ document.getElementById('shopFormTitle').textContent='Edit Shop'; document.getElementById('sfId').value=r.shop_id; document.getElementById('sfName').value=r.shop_name||''; document.getElementById('sfClub').value=r.club_id||''; document.getElementById('sfType').value=r.shop_type||'physical'; document.getElementById('sfContact').value=r.contact||''; document.getElementById('sfAddress').value=r.address||''; document.getElementById('sfDesc').value=r.description||''; document.getElementById('shopForm').classList.add('open'); }
+async function saveShop(){
+  const msg=document.getElementById('sfMsg'), id=document.getElementById('sfId').value;
+  const payload={ shop_name:document.getElementById('sfName').value.trim(), club_id:document.getElementById('sfClub').value, shop_type:document.getElementById('sfType').value, contact:document.getElementById('sfContact').value.trim(), address:document.getElementById('sfAddress').value.trim(), description:document.getElementById('sfDesc').value.trim(), is_active:true };
+  if(!payload.shop_name||!payload.club_id){ msg.textContent='Name and Club required'; msg.className='msg err'; return; }
+  msg.textContent='Saving…'; msg.className='msg';
+  const { error } = id ? await _db.from('shops').update(payload).eq('shop_id',id) : await _db.from('shops').insert(payload);
+  if(error){ msg.textContent=error.message; msg.className='msg err'; return; }
+  await loadCaches(); closeForm('shopForm'); showShops();
+}
+
+// ══════════════════════════════════════════════
+//  SECTION: SHOP IMAGES
+// ══════════════════════════════════════════════
+async function showShopImages(){
+  setMain(`<div class="empty"><span class="spinner"></span> Loading…</div>`);
+  try {
+    const { data: rows, error } = await _db.from('shop_images').select('*').order('sort_order');
+    if(error) throw error;
+    setMain(`
+      <div class="section-header">
+        <div><div class="section-title">Shop Images</div></div>
+        <button class="btn btn-primary btn-sm" onclick="openShopImgForm()">+ Add Image</button>
+      </div>
+      <div class="form-panel" id="shopImgForm">
+        <div class="form-panel-title">✏️ <span id="shopImgFormTitle">Add Image</span></div>
+        <input type="hidden" id="siId"/>
+        <div class="form-row">
+          <div class="form-group"><label>Shop</label><select id="siShop"><option value="">— Select Shop —</option>${shopOpts()}</select></div>
+          <div class="form-group"><label>Sort Order</label><input type="number" id="siSort" value="0"/></div>
+        </div>
+        <div class="form-group">
+          <label>Image</label>
+          <div class="img-upload-wrap">
+            <div class="img-upload-row">
+              <input type="text" id="siUrl" placeholder="https://… or upload below"/>
+              <button type="button" class="upload-btn" onclick="triggerUpload('siFile')">📁 Upload</button>
+              <input type="file" id="siFile" class="hidden-file" accept="image/*" onchange="uploadImage(this,'siUrl','siPreview','siProgress','shops')"/>
+            </div>
+            <div class="upload-progress" id="siProgress"><span class="spinner"></span> Uploading…</div>
+            <img id="siPreview" class="upload-preview" src="" alt="preview"/>
+          </div>
+        </div>
+        <div class="form-group"><label>Caption</label><input id="siCaption"/></div>
+        <div style="display:flex;gap:.75rem;align-items:center">
+          <button class="btn btn-primary" onclick="saveShopImg()">Save</button>
+          <button class="btn btn-ghost" onclick="closeForm('shopImgForm')">Cancel</button>
+          <span class="msg" id="siMsg"></span>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Preview</th><th>Shop</th><th>Caption</th><th>Sort</th><th>Actions</th></tr></thead>
+          <tbody>${(rows||[]).map(r=>`
+            <tr>
+              <td>${r.image_url?`<img src="${r.image_url}" style="width:60px;height:36px;object-fit:cover;border:1px solid var(--border)"/>`:'—'}</td>
+              <td>${shopName(r.shop_id)}</td>
+              <td>${r.caption||'—'}</td>
+              <td>${r.sort_order||0}</td>
+              <td class="td-actions">
+                <button class="btn btn-ghost btn-sm" onclick='editShopImg(${JSON.stringify(r)})'>Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="confirmDelete('shop_images','image_id','${r.image_id}',showShopImages)">Delete</button>
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`);
+  } catch(e){ setMain(`<div class="empty">Error: ${e.message}</div>`); }
+}
+
+function openShopImgForm(){ document.getElementById('shopImgFormTitle').textContent='Add Image'; ['siId','siUrl','siCaption'].forEach(id=>document.getElementById(id).value=''); document.getElementById('siSort').value='0'; resetUploadWidget('siUrl','siPreview','siProgress'); document.getElementById('shopImgForm').classList.add('open'); }
+function editShopImg(r){ document.getElementById('shopImgFormTitle').textContent='Edit Image'; document.getElementById('siId').value=r.image_id; document.getElementById('siShop').value=r.shop_id||''; document.getElementById('siUrl').value=r.image_url||''; document.getElementById('siCaption').value=r.caption||''; document.getElementById('siSort').value=r.sort_order||0; showExistingPreview(r.image_url,'siPreview'); document.getElementById('shopImgForm').classList.add('open'); }
+async function saveShopImg(){
+  const msg=document.getElementById('siMsg'), id=document.getElementById('siId').value;
+  const payload={ shop_id:document.getElementById('siShop').value, image_url:document.getElementById('siUrl').value.trim(), caption:document.getElementById('siCaption').value.trim(), sort_order:parseInt(document.getElementById('siSort').value)||0 };
+  if(!payload.shop_id||!payload.image_url){ msg.textContent='Shop and URL required'; msg.className='msg err'; return; }
+  msg.textContent='Saving…'; msg.className='msg';
+  const { error } = id ? await _db.from('shop_images').update(payload).eq('image_id',id) : await _db.from('shop_images').insert(payload);
+  if(error){ msg.textContent=error.message; msg.className='msg err'; return; }
+  closeForm('shopImgForm'); showShopImages();
+}
+
+// ══════════════════════════════════════════════
+//  SECTION: SHOP PRODUCTS
+// ══════════════════════════════════════════════
+async function showShopProducts(){
+  setMain(`<div class="empty"><span class="spinner"></span> Loading…</div>`);
+  try {
+    const { data: rows, error } = await _db.from('shop_products').select('*');
+    if(error) throw error;
+    setMain(`
+      <div class="section-header">
+        <div><div class="section-title">Shop Products</div><div class="section-sub">Link products to shops</div></div>
+        <button class="btn btn-primary btn-sm" onclick="openShopProdForm()">+ Link Product</button>
+      </div>
+      <div class="form-panel" id="shopProdForm">
+        <div class="form-panel-title">✏️ Link Product to Shop</div>
+        <input type="hidden" id="spId"/>
+        <div class="form-row">
+          <div class="form-group"><label>Shop</label><select id="spShop"><option value="">— Select Shop —</option>${shopOpts()}</select></div>
+          <div class="form-group"><label>Product</label><select id="spProd"><option value="">— Select Product —</option>${prodOpts()}</select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Price Override (₹) — optional</label><input type="number" id="spPrice" placeholder="Leave blank to use product price"/></div>
+          <div class="form-group"><label>Available</label>
+            <select id="spAvail"><option value="true">Yes</option><option value="false">No</option></select>
+          </div>
+        </div>
+        <div style="display:flex;gap:.75rem;align-items:center">
+          <button class="btn btn-primary" onclick="saveShopProd()">Save</button>
+          <button class="btn btn-ghost" onclick="closeForm('shopProdForm')">Cancel</button>
+          <span class="msg" id="spMsg"></span>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Shop</th><th>Product</th><th>Price Override</th><th>Available</th><th>Actions</th></tr></thead>
+          <tbody>${(rows||[]).map(r=>`
+            <tr>
+              <td>${shopName(r.shop_id)}</td>
+              <td>${prodName(r.product_id)}</td>
+              <td>${r.price_override?'₹'+Number(r.price_override).toLocaleString('en-IN'):'—'}</td>
+              <td>${r.is_available?'<span class="badge badge-active">Yes</span>':'<span class="badge badge-inactive">No</span>'}</td>
+              <td class="td-actions">
+                <button class="btn btn-danger btn-sm" onclick="confirmDelete('shop_products','id','${r.id}',showShopProducts)">Remove</button>
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`);
+  } catch(e){ setMain(`<div class="empty">Error: ${e.message}</div>`); }
+}
+
+function openShopProdForm(){ ['spId','spPrice'].forEach(id=>document.getElementById(id).value=''); document.getElementById('spAvail').value='true'; document.getElementById('shopProdForm').classList.add('open'); }
+async function saveShopProd(){
+  const msg=document.getElementById('spMsg'), id=document.getElementById('spId').value;
+  const priceVal = document.getElementById('spPrice').value;
+  const payload={ shop_id:document.getElementById('spShop').value, product_id:document.getElementById('spProd').value, price_override:priceVal?parseFloat(priceVal):null, is_available:document.getElementById('spAvail').value==='true' };
+  if(!payload.shop_id||!payload.product_id){ msg.textContent='Shop and Product required'; msg.className='msg err'; return; }
+  msg.textContent='Saving…'; msg.className='msg';
+  const { error } = await _db.from('shop_products').insert(payload);
+  if(error){ msg.textContent=error.message; msg.className='msg err'; return; }
+  closeForm('shopProdForm'); showShopProducts();
+}
+
+// ══════════════════════════════════════════════
+//  SECTION: USERS
+// ══════════════════════════════════════════════
+async function showUsers(){
+  setMain(`<div class="empty"><span class="spinner"></span> Loading…</div>`);
+  try {
+    let q = _db.from('users').select('*');
+    if(!isSuperAdmin) q = q.eq('club_id', adminUser.club_id);
+    const { data: rows, error } = await q;
+    if(error) throw error;
+    setMain(`
+      <div class="section-header">
+        <div><div class="section-title">Users</div><div class="section-sub">${(rows||[]).length} users</div></div>
+        ${isSuperAdmin?`<button class="btn btn-primary btn-sm" onclick="openUserForm()">+ Add User</button>`:''}
+      </div>
+      <div class="form-panel" id="userForm">
+        <div class="form-panel-title">✏️ <span id="userFormTitle">Add User</span></div>
+        <input type="hidden" id="ufId"/>
+        <div class="form-row">
+          <div class="form-group"><label>Name</label><input id="ufName" placeholder="Full name"/></div>
+          <div class="form-group"><label>Email</label><input type="email" id="ufEmail" placeholder="email@example.com"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Password</label><input type="text" id="ufPass" placeholder="Password"/></div>
+          <div class="form-group"><label>Role</label>
+            <select id="ufRole">
+              <option value="member">Member</option>
+              <option value="clubadmin">Club Admin</option>
+              <option value="superadmin">Super Admin</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label>Club</label><select id="ufClub"><option value="">— Select Club —</option>${clubOpts()}</select></div>
+        <div style="display:flex;gap:.75rem;align-items:center">
+          <button class="btn btn-primary" onclick="saveUser()">Save</button>
+          <button class="btn btn-ghost" onclick="closeForm('userForm')">Cancel</button>
+          <span class="msg" id="ufMsg"></span>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Club</th><th>Actions</th></tr></thead>
+          <tbody>${(rows||[]).map(r=>`
+            <tr>
+              <td style="font-weight:500;color:var(--text)">${r.name||'—'}</td>
+              <td style="color:var(--text2)">${r.email}</td>
+              <td><span class="badge badge-role">${r.role||'member'}</span></td>
+              <td>${clubName(r.club_id)}</td>
+              <td class="td-actions">
+                <button class="btn btn-ghost btn-sm" onclick='editUser(${JSON.stringify(r)})'>Edit</button>
+                ${isSuperAdmin?`<button class="btn btn-danger btn-sm" onclick="confirmDelete('users','user_id','${r.user_id}',showUsers)">Delete</button>`:''}
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`);
+  } catch(e){ setMain(`<div class="empty">Error: ${e.message}</div>`); }
+}
+
+function openUserForm(){ document.getElementById('userFormTitle').textContent='Add User'; ['ufId','ufName','ufEmail','ufPass'].forEach(id=>document.getElementById(id).value=''); document.getElementById('ufRole').value='member'; document.getElementById('ufClub').value=''; document.getElementById('userForm').classList.add('open'); }
+function editUser(r){ document.getElementById('userFormTitle').textContent='Edit User'; document.getElementById('ufId').value=r.user_id; document.getElementById('ufName').value=r.name||''; document.getElementById('ufEmail').value=r.email||''; document.getElementById('ufPass').value=r.password||''; document.getElementById('ufRole').value=r.role||'member'; document.getElementById('ufClub').value=r.club_id||''; document.getElementById('userForm').classList.add('open'); }
+async function saveUser(){
+  const msg=document.getElementById('ufMsg'), id=document.getElementById('ufId').value;
+  const payload={ name:document.getElementById('ufName').value.trim(), email:document.getElementById('ufEmail').value.trim(), password:document.getElementById('ufPass').value, role:document.getElementById('ufRole').value, club_id:document.getElementById('ufClub').value||null };
+  if(!payload.name||!payload.email){ msg.textContent='Name and Email required'; msg.className='msg err'; return; }
+  msg.textContent='Saving…'; msg.className='msg';
+  const { error } = id ? await _db.from('users').update(payload).eq('user_id',id) : await _db.from('users').insert(payload);
+  if(error){ msg.textContent=error.message; msg.className='msg err'; return; }
+  await loadCaches(); closeForm('userForm'); showUsers();
+}
+
+// ══════════════════════════════════════════════
+//  SECTION: USER PROFILES (Mentors)
+// ══════════════════════════════════════════════
+async function showUserProfiles(){
+  setMain(`<div class="empty"><span class="spinner"></span> Loading…</div>`);
+  try {
+    const { data: rows, error } = await _db.from('user_profiles').select('*');
+    if(error) throw error;
+    setMain(`
+      <div class="section-header">
+        <div><div class="section-title">Mentor Profiles</div><div class="section-sub">${(rows||[]).length} profiles</div></div>
+        <button class="btn btn-primary btn-sm" onclick="openProfileForm()">+ Add Profile</button>
+      </div>
+      <div class="form-panel" id="profileForm">
+        <div class="form-panel-title">✏️ <span id="profileFormTitle">Add Mentor Profile</span></div>
+        <div class="form-group"><label>User</label><select id="prUser"><option value="">— Select User —</option>${_users.map(u=>`<option value="${u.user_id}">${u.name||u.email}</option>`).join('')}</select></div>
+        <div class="form-row">
+          <div class="form-group"><label>Tagline</label><input id="prTagline" placeholder="e.g. AI & Productivity Coach"/></div>
+          <div class="form-group"><label>Experience (years)</label><input type="number" id="prExp" placeholder="5"/></div>
+        </div>
+        <div class="form-group"><label>Bio</label><textarea id="prBio" style="min-height:100px" placeholder="About this mentor…"></textarea></div>
+        <div class="form-row">
+          <div class="form-group"><label>Skills (comma separated)</label><input id="prSkills" placeholder="Python, AI, Design"/></div>
+          <div class="form-group"><label>Rate per Hour (₹)</label><input type="number" id="prRate" placeholder="500"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Availability</label>
+            <select id="prAvail"><option value="anytime">Anytime</option><option value="weekends">Weekends</option><option value="evenings">Evenings</option></select>
+          </div>
+          <div class="form-group"><label>Is Mentor</label>
+            <select id="prMentor"><option value="true">Yes</option><option value="false">No</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>LinkedIn URL</label><input id="prLinkedin" placeholder="https://linkedin.com/in/…"/></div>
+          <div class="form-group"><label>Website URL</label><input id="prWebsite" placeholder="https://…"/></div>
+        </div>
+        <div style="display:flex;gap:.75rem;align-items:center">
+          <button class="btn btn-primary" onclick="saveProfile()">Save</button>
+          <button class="btn btn-ghost" onclick="closeForm('profileForm')">Cancel</button>
+          <span class="msg" id="prMsg"></span>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>User</th><th>Tagline</th><th>Mentor</th><th>Rate/hr</th><th>Availability</th><th>Actions</th></tr></thead>
+          <tbody>${(rows||[]).map(r=>`
+            <tr>
+              <td style="font-weight:500;color:var(--text)">${userName(r.user_id)}</td>
+              <td>${r.tagline||'—'}</td>
+              <td>${r.is_mentor?'<span class="badge badge-active">Yes</span>':'<span class="badge badge-inactive">No</span>'}</td>
+              <td>${r.rate_per_hr?'₹'+r.rate_per_hr:' Free'}</td>
+              <td>${r.availability||'—'}</td>
+              <td class="td-actions">
+                <button class="btn btn-ghost btn-sm" onclick='editProfile(${JSON.stringify(r)})'>Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="confirmDelete('user_profiles','user_id','${r.user_id}',showUserProfiles)">Delete</button>
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`);
+  } catch(e){ setMain(`<div class="empty">Error: ${e.message}</div>`); }
+}
+
+function openProfileForm(){ document.getElementById('profileFormTitle').textContent='Add Profile'; ['prTagline','prBio','prSkills','prLinkedin','prWebsite'].forEach(id=>document.getElementById(id).value=''); document.getElementById('prExp').value=''; document.getElementById('prRate').value=''; document.getElementById('prAvail').value='anytime'; document.getElementById('prMentor').value='true'; document.getElementById('profileForm').classList.add('open'); }
+function editProfile(r){ document.getElementById('profileFormTitle').textContent='Edit Profile'; document.getElementById('prUser').value=r.user_id||''; document.getElementById('prTagline').value=r.tagline||''; document.getElementById('prBio').value=r.bio||''; document.getElementById('prSkills').value=(r.skills||[]).join(', '); document.getElementById('prExp').value=r.experience_yr||''; document.getElementById('prRate').value=r.rate_per_hr||''; document.getElementById('prAvail').value=r.availability||'anytime'; document.getElementById('prMentor').value=String(r.is_mentor||false); document.getElementById('prLinkedin').value=r.linkedin_url||''; document.getElementById('prWebsite').value=r.website_url||''; document.getElementById('profileForm').classList.add('open'); }
+async function saveProfile(){
+  const msg=document.getElementById('prMsg');
+  const userId=document.getElementById('prUser').value;
+  const skillsRaw=document.getElementById('prSkills').value;
+  const payload={ user_id:userId, tagline:document.getElementById('prTagline').value.trim(), bio:document.getElementById('prBio').value.trim(), skills:skillsRaw?skillsRaw.split(',').map(s=>s.trim()).filter(Boolean):[], experience_yr:parseInt(document.getElementById('prExp').value)||null, rate_per_hr:parseFloat(document.getElementById('prRate').value)||null, availability:document.getElementById('prAvail').value, is_mentor:document.getElementById('prMentor').value==='true', linkedin_url:document.getElementById('prLinkedin').value.trim(), website_url:document.getElementById('prWebsite').value.trim(), updated_at:new Date().toISOString() };
+  if(!userId){ msg.textContent='User required'; msg.className='msg err'; return; }
+  msg.textContent='Saving…'; msg.className='msg';
+  const { error } = await _db.from('user_profiles').upsert(payload, {onConflict:'user_id'});
+  if(error){ msg.textContent=error.message; msg.className='msg err'; return; }
+  closeForm('profileForm'); showUserProfiles();
+}
+
+// ══════════════════════════════════════════════
+//  SHARED HELPERS
+// ══════════════════════════════════════════════
+function closeForm(id){ document.getElementById(id).classList.remove('open'); }
+
+function confirmDelete(table, pkCol, pkVal, reloadFn){
+  openConfirm(`Delete this record from ${table}?`, ()=> deleteRow(table, pkCol, pkVal, reloadFn));
+}
+
+// ══════════════════════════════════════════════
+//  IMAGE UPLOAD — Supabase Storage
+// ══════════════════════════════════════════════
+const BUCKET = 'coworkclub-media';
+const SB_STORAGE_URL = `${SB_URL}/storage/v1/object/${BUCKET}`;
+const SB_STORAGE_PUB = `${SB_URL}/storage/v1/object/public/${BUCKET}`;
+
+function triggerUpload(fileInputId){
+  document.getElementById(fileInputId).click();
+}
+
+async function uploadImage(fileInput, urlFieldId, previewId, progressId, folder){
+  const file = fileInput.files[0];
+  if(!file) return;
+
+  // Show progress
+  const prog = document.getElementById(progressId);
+  const prev = document.getElementById(previewId);
+  prog.classList.add('show');
+  prev.classList.remove('show');
+
+  try {
+    // Unique filename: folder/timestamp-originalname
+    const ext      = file.name.split('.').pop().toLowerCase();
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+    const path     = `${folder}/${Date.now()}-${safeName}`;
+
+    // Upload via fetch (works with anon key for public bucket)
+    const res = await fetch(`${SB_STORAGE_URL}/${path}`, {
+      method:  'POST',
+      headers: {
+        'Authorization': `Bearer ${SB_ANON}`,
+        'Content-Type':  file.type,
+        'x-upsert':      'true'
+      },
+      body: file
+    });
+
+    if(!res.ok){
+      const err = await res.json().catch(()=>({message: res.statusText}));
+      throw new Error(err.message || 'Upload failed');
+    }
+
+    // Build public URL
+    const publicUrl = `${SB_STORAGE_PUB}/${path}`;
+
+    // Fill URL field + show preview
+    document.getElementById(urlFieldId).value = publicUrl;
+    prev.src = publicUrl;
+    prev.classList.add('show');
+    prog.classList.remove('show');
+
+    // Reset file input
+    fileInput.value = '';
+
+  } catch(e){
+    prog.classList.remove('show');
+    alert('Upload error: ' + e.message);
+  }
+}
+
+// Reset upload widget helper
+function resetUploadWidget(urlId, previewId, progressId){
+  const prev = document.getElementById(previewId);
+  const prog = document.getElementById(progressId);
+  if(prev){ prev.src=''; prev.classList.remove('show'); }
+  if(prog){ prog.classList.remove('show'); }
+}
+
+// Show preview when editing existing image
+function showExistingPreview(url, previewId){
+  const prev = document.getElementById(previewId);
+  if(prev && url){ prev.src=url; prev.classList.add('show'); }
+  else if(prev){ prev.src=''; prev.classList.remove('show'); }
+}
+
+// ══════════════════════════════════════════════
+//  DELIVERY CACHE
+// ══════════════════════════════════════════════
+let _routes    = [];
+let _movements = [];
+let _drivers   = [];
+
+async function loadDeliveryCaches(){
+  try {
+    const { data: rt } = await _db.from('routes').select('route_id,route_name,club_id').order('route_name');
+    _routes = (rt||[]).filter(r => isSuperAdmin || r.club_id === adminUser.club_id);
+
+    const { data: mv } = await _db.from('route_movements').select('movement_id,route_id,movement_date,status');
+    _movements = mv||[];
+
+    // drivers = users where role indicates driver — we'll just use all users as fallback
+    _drivers = _users;
+  } catch(e){ console.warn('delivery cache:', e.message); }
+}
+
+function routeOpts(sel=''){
+  return _routes.map(r=>`<option value="${r.route_id}" ${r.route_id===sel?'selected':''}>${r.route_name}</option>`).join('');
+}
+function movementOpts(sel=''){
+  return _movements.map(m=>{
+    const rname = _routes.find(r=>r.route_id===m.route_id)?.route_name||'Route';
+    return `<option value="${m.movement_id}" ${m.movement_id===sel?'selected':''}>${rname} · ${m.movement_date} [${m.status}]</option>`;
+  }).join('');
+}
+function driverOpts(sel=''){
+  return _drivers.map(u=>`<option value="${u.user_id}" ${u.user_id===sel?'selected':''}>${u.name||u.email}</option>`).join('');
+}
+function routeName(id){ return _routes.find(r=>r.route_id===id)?.route_name || id?.slice(0,8)+'…' || '—'; }
+function movementLabel(id){
+  const m = _movements.find(x=>x.movement_id===id);
+  if(!m) return id?.slice(0,8)+'…'||'—';
+  return `${routeName(m.route_id)} · ${m.movement_date}`;
+}
+
+// ══════════════════════════════════════════════
+//  SECTION: ROUTES
+// ══════════════════════════════════════════════
+async function showRoutes(){
+  setMain(`<div class="empty"><span class="spinner"></span> Loading…</div>`);
+  await loadDeliveryCaches();
+  try {
+    let q = _db.from('routes').select('*').order('route_name');
+    if(!isSuperAdmin) q = q.eq('club_id', adminUser.club_id);
+    const { data: rows, error } = await q;
+    if(error) throw error;
+    setMain(`
+      <div class="section-header">
+        <div><div class="section-title">Routes</div><div class="section-sub">${(rows||[]).length} routes defined</div></div>
+        <button class="btn btn-primary btn-sm" onclick="openRouteForm()">+ Add Route</button>
+      </div>
+      <div class="form-panel" id="routeForm">
+        <div class="form-panel-title">✏️ <span id="routeFormTitle">Add Route</span></div>
+        <input type="hidden" id="rfId"/>
+        <div class="form-row">
+          <div class="form-group"><label>Route Name</label><input id="rfName" placeholder="e.g. Kannur North Circle"/></div>
+          <div class="form-group"><label>Club / Region</label>
+            <select id="rfClub"><option value="">— Select Club —</option>${clubOpts()}</select>
+          </div>
+        </div>
+        <div class="form-group"><label>Description</label>
+          <textarea id="rfDesc" placeholder="Coverage area, landmarks, notes…" style="min-height:70px"></textarea>
+        </div>
+        <div class="form-group"><label>Active</label>
+          <select id="rfActive"><option value="true">Yes</option><option value="false">No</option></select>
+        </div>
+        <div style="display:flex;gap:.75rem;align-items:center">
+          <button class="btn btn-primary" onclick="saveRoute()">Save</button>
+          <button class="btn btn-ghost" onclick="closeForm('routeForm')">Cancel</button>
+          <span class="msg" id="rfMsg"></span>
+        </div>
+      </div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Route Name</th><th>Club</th><th>Description</th><th>Active</th><th>Created</th><th>Actions</th></tr></thead>
+        <tbody>${(rows||[]).length===0
+          ?`<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3)">No routes yet — click + Add Route</td></tr>`
+          :(rows||[]).map(r=>`<tr>
+            <td style="font-weight:500;color:var(--text)">${r.route_name}</td>
+            <td>${clubName(r.club_id)}</td>
+            <td style="color:var(--text2);font-size:.78rem;max-width:240px">${r.description||'—'}</td>
+            <td>${r.is_active?'<span class="badge badge-active">Active</span>':'<span class="badge badge-inactive">Inactive</span>'}</td>
+            <td style="color:var(--text3);font-size:.72rem">${r.created_at?new Date(r.created_at).toLocaleDateString():'—'}</td>
+            <td class="td-actions">
+              <button class="btn btn-ghost btn-sm" onclick='editRoute(${JSON.stringify(r)})'>Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="confirmDelete('routes','route_id','${r.route_id}',showRoutes)">Delete</button>
+            </td>
+          </tr>`).join('')
+        }</tbody>
+      </table></div>`);
+  } catch(e){ setMain(`<div class="empty">❌ ${e.message}</div>`); }
+}
+function openRouteForm(){
+  document.getElementById('routeFormTitle').textContent='Add Route';
+  ['rfId','rfName','rfDesc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('rfActive').value='true';
+  document.getElementById('rfClub').value=isSuperAdmin?'':adminUser.club_id;
+  document.getElementById('routeForm').classList.add('open');
+}
+function editRoute(r){
+  document.getElementById('routeFormTitle').textContent='Edit Route';
+  document.getElementById('rfId').value=r.route_id;
+  document.getElementById('rfName').value=r.route_name||'';
+  document.getElementById('rfDesc').value=r.description||'';
+  document.getElementById('rfActive').value=String(r.is_active!==false);
+  document.getElementById('rfClub').value=r.club_id||'';
+  document.getElementById('routeForm').classList.add('open');
+}
+async function saveRoute(){
+  const msg=document.getElementById('rfMsg'), id=document.getElementById('rfId').value;
+  const payload={
+    route_name:  document.getElementById('rfName').value.trim(),
+    description: document.getElementById('rfDesc').value.trim(),
+    is_active:   document.getElementById('rfActive').value==='true',
+    club_id:     document.getElementById('rfClub').value||null
+  };
+  if(!payload.route_name){ msg.textContent='Name required'; msg.className='msg err'; return; }
+  msg.textContent='Saving…'; msg.className='msg';
+  const { error } = id
+    ? await _db.from('routes').update(payload).eq('route_id',id)
+    : await _db.from('routes').insert(payload);
+  if(error){ msg.textContent=error.message; msg.className='msg err'; return; }
+  closeForm('routeForm'); showRoutes();
+}
+
+// ══════════════════════════════════════════════
+//  SECTION: WAYPOINTS
+// ══════════════════════════════════════════════
+async function showWaypoints(){
+  setMain(`<div class="empty"><span class="spinner"></span> Loading…</div>`);
+  await loadDeliveryCaches();
+  try {
+    const { data: rows, error } = await _db.from('route_waypoints').select('*').order('sequence');
+    if(error) throw error;
+    // Group by route for display
+    const grouped = {};
+    (rows||[]).forEach(w=>{
+      if(!grouped[w.route_id]) grouped[w.route_id]=[];
+      grouped[w.route_id].push(w);
+    });
+    setMain(`
+      <div class="section-header">
+        <div><div class="section-title">Route Waypoints</div><div class="section-sub">Sequence of stops that form each route circle</div></div>
+        <button class="btn btn-primary btn-sm" onclick="openWptForm()">+ Add Waypoint</button>
+      </div>
+      <div class="form-panel" id="wptForm">
+        <div class="form-panel-title">✏️ <span id="wptFormTitle">Add Waypoint</span></div>
+        <input type="hidden" id="wfId"/>
+        <div class="form-row">
+          <div class="form-group"><label>Route</label>
+            <select id="wfRoute"><option value="">— Select Route —</option>${routeOpts()}</select>
+          </div>
+          <div class="form-group"><label>Waypoint Name</label>
+            <input id="wfName" placeholder="e.g. Thavakkara Junction"/>
+          </div>
+        </div>
+        <div class="form-row-3">
+          <div class="form-group"><label>Sequence #</label>
+            <input type="number" id="wfSeq" placeholder="1" min="1"/>
+          </div>
+          <div class="form-group"><label>Latitude</label>
+            <input type="number" id="wfLat" placeholder="11.8745" step="any"/>
+          </div>
+          <div class="form-group"><label>Longitude</label>
+            <input type="number" id="wfLng" placeholder="75.3704" step="any"/>
+          </div>
+        </div>
+        <div style="display:flex;gap:.75rem;align-items:center">
+          <button class="btn btn-primary" onclick="saveWpt()">Save</button>
+          <button class="btn btn-ghost" onclick="closeForm('wptForm')">Cancel</button>
+          <span class="msg" id="wfMsg"></span>
+        </div>
+      </div>
+
+      <!-- Filter by route -->
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap">
+        <span style="font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">Route:</span>
+        <select id="wptRouteFilter" onchange="filterWaypoints(${JSON.stringify(rows||[]).replace(/"/g,'&quot;')})"
+          style="padding:.35rem .75rem;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:'Outfit',sans-serif;font-size:.78rem;outline:none">
+          <option value="">All Routes</option>${routeOpts()}
+        </select>
+      </div>
+
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Seq</th><th>Waypoint Name</th><th>Route</th><th>Lat</th><th>Lng</th><th>Actions</th></tr></thead>
+        <tbody id="wptTbody">${renderWptRows(rows||[])}</tbody>
+      </table></div>`);
+    window._wptAllRows = rows||[];
+  } catch(e){ setMain(`<div class="empty">❌ ${e.message}</div>`); }
+}
+function renderWptRows(rows){
+  if(!rows.length) return `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3)">No waypoints yet.</td></tr>`;
+  return rows.map(r=>`<tr>
+    <td style="font-size:.8rem;font-weight:700;color:var(--accent);text-align:center;width:48px">${r.sequence}</td>
+    <td style="font-weight:500;color:var(--text)">${r.way_name}</td>
+    <td>${routeName(r.route_id)}</td>
+    <td style="font-family:monospace;font-size:.75rem;color:var(--text3)">${r.lat}</td>
+    <td style="font-family:monospace;font-size:.75rem;color:var(--text3)">${r.lng}</td>
+    <td class="td-actions">
+      <button class="btn btn-ghost btn-sm" onclick='editWpt(${JSON.stringify(r)})'>Edit</button>
+      <button class="btn btn-danger btn-sm" onclick="confirmDelete('route_waypoints','way_id','${r.way_id}',showWaypoints)">Delete</button>
+    </td>
+  </tr>`).join('');
+}
+function filterWaypoints(rows){
+  const val = document.getElementById('wptRouteFilter').value;
+  document.getElementById('wptTbody').innerHTML = renderWptRows(val ? rows.filter(r=>r.route_id===val) : rows);
+}
+function openWptForm(){
+  document.getElementById('wptFormTitle').textContent='Add Waypoint';
+  ['wfId','wfName','wfSeq','wfLat','wfLng'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('wptForm').classList.add('open');
+}
+function editWpt(r){
+  document.getElementById('wptFormTitle').textContent='Edit Waypoint';
+  document.getElementById('wfId').value=r.way_id;
+  document.getElementById('wfRoute').value=r.route_id||'';
+  document.getElementById('wfName').value=r.way_name||'';
+  document.getElementById('wfSeq').value=r.sequence||'';
+  document.getElementById('wfLat').value=r.lat||'';
+  document.getElementById('wfLng').value=r.lng||'';
+  document.getElementById('wptForm').classList.add('open');
+}
+async function saveWpt(){
+  const msg=document.getElementById('wfMsg'), id=document.getElementById('wfId').value;
+  const payload={
+    route_id: document.getElementById('wfRoute').value,
+    way_name: document.getElementById('wfName').value.trim(),
+    sequence: parseInt(document.getElementById('wfSeq').value),
+    lat:      parseFloat(document.getElementById('wfLat').value),
+    lng:      parseFloat(document.getElementById('wfLng').value)
+  };
+  if(!payload.route_id||!payload.way_name||!payload.sequence){ msg.textContent='Route, Name and Sequence required'; msg.className='msg err'; return; }
+  if(isNaN(payload.lat)||isNaN(payload.lng)){ msg.textContent='Valid lat/lng required'; msg.className='msg err'; return; }
+  msg.textContent='Saving…'; msg.className='msg';
+  const { error } = id
+    ? await _db.from('route_waypoints').update(payload).eq('way_id',id)
+    : await _db.from('route_waypoints').insert(payload);
+  if(error){ msg.textContent=error.message; msg.className='msg err'; return; }
+  closeForm('wptForm'); showWaypoints();
+}
+
+// ══════════════════════════════════════════════
+//  SECTION: MOVEMENTS
+// ══════════════════════════════════════════════
+async function showMovements(){
+  setMain(`<div class="empty"><span class="spinner"></span> Loading…</div>`);
+  await loadDeliveryCaches();
+  try {
+    let q = _db.from('route_movements').select('*').order('movement_date', {ascending:false});
+    const { data: rows, error } = await q;
+    if(error) throw error;
+    const statusColors = {scheduled:'badge-role', in_progress:'badge-active', completed:'badge-inactive', cancelled:'badge-inactive'};
+    setMain(`
+      <div class="section-header">
+        <div><div class="section-title">Route Movements</div><div class="section-sub">Trip scheduling — ${(rows||[]).length} movements</div></div>
+        <button class="btn btn-primary btn-sm" onclick="openMvForm()">+ Schedule Movement</button>
+      </div>
+      <div class="form-panel" id="mvForm">
+        <div class="form-panel-title">✏️ <span id="mvFormTitle">Schedule Movement</span></div>
+        <input type="hidden" id="mvId"/>
+        <div class="form-row">
+          <div class="form-group"><label>Route</label>
+            <select id="mvRoute"><option value="">— Select Route —</option>${routeOpts()}</select>
+          </div>
+          <div class="form-group"><label>Shop (Seller)</label>
+            <select id="mvShop"><option value="">— Select Shop —</option>${shopOpts()}</select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Driver</label>
+            <select id="mvDriver"><option value="">— Select Driver —</option>${driverOpts()}</select>
+          </div>
+          <div class="form-group"><label>Movement Date</label>
+            <input type="date" id="mvDate"/>
+          </div>
+        </div>
+        <div class="form-row-3">
+          <div class="form-group"><label>Start Time</label>
+            <input type="time" id="mvStart"/>
+          </div>
+          <div class="form-group"><label>End Time</label>
+            <input type="time" id="mvEnd"/>
+          </div>
+          <div class="form-group"><label>Status</label>
+            <select id="mvStatus">
+              <option value="scheduled">Scheduled</option>
+              <option value="in_progress">In Progress</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label>Notes</label>
+          <input id="mvNotes" placeholder="Any notes for this trip…"/>
+        </div>
+        <div style="display:flex;gap:.75rem;align-items:center">
+          <button class="btn btn-primary" onclick="saveMv()">Save</button>
+          <button class="btn btn-ghost" onclick="closeForm('mvForm')">Cancel</button>
+          <span class="msg" id="mvMsg"></span>
+        </div>
+      </div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Date</th><th>Route</th><th>Shop</th><th>Driver</th><th>Start</th><th>End</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>${(rows||[]).length===0
+          ?`<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3)">No movements scheduled yet.</td></tr>`
+          :(rows||[]).map(r=>`<tr>
+            <td style="font-weight:500;color:var(--text)">${r.movement_date}</td>
+            <td>${routeName(r.route_id)}</td>
+            <td>${shopName(r.shop_id)}</td>
+            <td>${userName(r.driver_id)}</td>
+            <td style="font-family:monospace;font-size:.75rem">${r.start_time||'—'}</td>
+            <td style="font-family:monospace;font-size:.75rem">${r.end_time||'—'}</td>
+            <td><span class="badge ${statusColors[r.status]||'badge-role'}">${r.status||'—'}</span></td>
+            <td class="td-actions">
+              <button class="btn btn-ghost btn-sm" onclick='editMv(${JSON.stringify(r)})'>Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="confirmDelete('route_movements','movement_id','${r.movement_id}',showMovements)">Delete</button>
+            </td>
+          </tr>`).join('')
+        }</tbody>
+      </table></div>`);
+  } catch(e){ setMain(`<div class="empty">❌ ${e.message}</div>`); }
+}
+function openMvForm(){
+  document.getElementById('mvFormTitle').textContent='Schedule Movement';
+  ['mvId','mvNotes','mvStart','mvEnd'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('mvDate').value=new Date().toISOString().slice(0,10);
+  document.getElementById('mvStatus').value='scheduled';
+  document.getElementById('mvForm').classList.add('open');
+}
+function editMv(r){
+  document.getElementById('mvFormTitle').textContent='Edit Movement';
+  document.getElementById('mvId').value=r.movement_id;
+  document.getElementById('mvRoute').value=r.route_id||'';
+  document.getElementById('mvShop').value=r.shop_id||'';
+  document.getElementById('mvDriver').value=r.driver_id||'';
+  document.getElementById('mvDate').value=r.movement_date||'';
+  document.getElementById('mvStart').value=r.start_time||'';
+  document.getElementById('mvEnd').value=r.end_time||'';
+  document.getElementById('mvStatus').value=r.status||'scheduled';
+  document.getElementById('mvNotes').value=r.notes||'';
+  document.getElementById('mvForm').classList.add('open');
+}
+async function saveMv(){
+  const msg=document.getElementById('mvMsg'), id=document.getElementById('mvId').value;
+  const payload={
+    route_id:      document.getElementById('mvRoute').value||null,
+    shop_id:       document.getElementById('mvShop').value||null,
+    driver_id:     document.getElementById('mvDriver').value||null,
+    movement_date: document.getElementById('mvDate').value,
+    start_time:    document.getElementById('mvStart').value||null,
+    end_time:      document.getElementById('mvEnd').value||null,
+    status:        document.getElementById('mvStatus').value,
+    notes:         document.getElementById('mvNotes').value.trim()
+  };
+  if(!payload.movement_date){ msg.textContent='Date required'; msg.className='msg err'; return; }
+  msg.textContent='Saving…'; msg.className='msg';
+  const { error } = id
+    ? await _db.from('route_movements').update(payload).eq('movement_id',id)
+    : await _db.from('route_movements').insert(payload);
+  if(error){ msg.textContent=error.message; msg.className='msg err'; return; }
+  closeForm('mvForm'); showMovements();
+}
+
+// ══════════════════════════════════════════════
+//  SECTION: MOVEMENT PRODUCTS (staging)
+// ══════════════════════════════════════════════
+async function showMovProducts(){
+  setMain(`<div class="empty"><span class="spinner"></span> Loading…</div>`);
+  await loadDeliveryCaches();
+  try {
+    const { data: rows, error } = await _db.from('movement_products').select('*');
+    if(error) throw error;
+    setMain(`
+      <div class="section-header">
+        <div><div class="section-title">Movement Products</div><div class="section-sub">Products staged for each trip · ${(rows||[]).length} entries</div></div>
+        <button class="btn btn-primary btn-sm" onclick="openMpForm()">+ Stage Product</button>
+      </div>
+      <div class="form-panel" id="mpForm">
+        <div class="form-panel-title">✏️ <span id="mpFormTitle">Stage Product for Movement</span></div>
+        <input type="hidden" id="mpId"/>
+        <div class="form-row">
+          <div class="form-group"><label>Movement (Trip)</label>
+            <select id="mpMov"><option value="">— Select Movement —</option>${movementOpts()}</select>
+          </div>
+          <div class="form-group"><label>Product</label>
+            <select id="mpProd"><option value="">— Select Product —</option>${prodOpts()}</select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Qty Available</label>
+            <input type="number" id="mpQty" value="0" min="0"/>
+          </div>
+          <div class="form-group"><label>Price (₹)</label>
+            <input type="number" id="mpPrice" value="0" min="0" step="0.01"/>
+          </div>
+        </div>
+        <div style="display:flex;gap:.75rem;align-items:center">
+          <button class="btn btn-primary" onclick="saveMp()">Save</button>
+          <button class="btn btn-ghost" onclick="closeForm('mpForm')">Cancel</button>
+          <span class="msg" id="mpMsg"></span>
+        </div>
+      </div>
+
+      <!-- Filter by movement -->
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap">
+        <span style="font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">Movement:</span>
+        <select id="mpMovFilter" onchange="filterMp()"
+          style="padding:.35rem .75rem;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:'Outfit',sans-serif;font-size:.78rem;outline:none">
+          <option value="">All</option>${movementOpts()}
+        </select>
+      </div>
+
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Movement</th><th>Product</th><th>Qty Available</th><th>Price</th><th>Actions</th></tr></thead>
+        <tbody id="mpTbody">${renderMpRows(rows||[])}</tbody>
+      </table></div>`);
+    window._mpAllRows = rows||[];
+  } catch(e){ setMain(`<div class="empty">❌ ${e.message}</div>`); }
+}
+function renderMpRows(rows){
+  if(!rows.length) return `<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text3)">No products staged yet.</td></tr>`;
+  return rows.map(r=>`<tr>
+    <td>${movementLabel(r.movement_id)}</td>
+    <td style="font-weight:500;color:var(--text)">${prodName(r.product_id)}</td>
+    <td style="text-align:center;font-weight:600;color:var(--accent)">${r.qty_available||0}</td>
+    <td>${r.price?'₹'+Number(r.price).toLocaleString('en-IN'):'—'}</td>
+    <td class="td-actions">
+      <button class="btn btn-ghost btn-sm" onclick='editMp(${JSON.stringify(r)})'>Edit</button>
+      <button class="btn btn-danger btn-sm" onclick="confirmDelete('movement_products','id','${r.id}',showMovProducts)">Delete</button>
+    </td>
+  </tr>`).join('');
+}
+function filterMp(){
+  const val=document.getElementById('mpMovFilter').value;
+  document.getElementById('mpTbody').innerHTML=renderMpRows(val?(window._mpAllRows||[]).filter(r=>r.movement_id===val):(window._mpAllRows||[]));
+}
+function openMpForm(){
+  document.getElementById('mpFormTitle').textContent='Stage Product for Movement';
+  ['mpId'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('mpQty').value='0';
+  document.getElementById('mpPrice').value='0';
+  document.getElementById('mpForm').classList.add('open');
+}
+function editMp(r){
+  document.getElementById('mpFormTitle').textContent='Edit Staged Product';
+  document.getElementById('mpId').value=r.id;
+  document.getElementById('mpMov').value=r.movement_id||'';
+  document.getElementById('mpProd').value=r.product_id||'';
+  document.getElementById('mpQty').value=r.qty_available||0;
+  document.getElementById('mpPrice').value=r.price||0;
+  document.getElementById('mpForm').classList.add('open');
+}
+async function saveMp(){
+  const msg=document.getElementById('mpMsg'), id=document.getElementById('mpId').value;
+  const payload={
+    movement_id:   document.getElementById('mpMov').value,
+    product_id:    document.getElementById('mpProd').value,
+    qty_available: parseInt(document.getElementById('mpQty').value)||0,
+    price:         parseFloat(document.getElementById('mpPrice').value)||null
+  };
+  if(!payload.movement_id||!payload.product_id){ msg.textContent='Movement and Product required'; msg.className='msg err'; return; }
+  msg.textContent='Saving…'; msg.className='msg';
+  const { error } = id
+    ? await _db.from('movement_products').update(payload).eq('id',id)
+    : await _db.from('movement_products').insert(payload);
+  if(error){ msg.textContent=error.message; msg.className='msg err'; return; }
+  closeForm('mpForm'); showMovProducts();
+}
+
+// ══════════════════════════════════════════════
+//  SECTION: ROUTE BOOKINGS (Orders)
+// ══════════════════════════════════════════════
+async function showBookings(){
+  setMain(`<div class="empty"><span class="spinner"></span> Loading…</div>`);
+  await loadDeliveryCaches();
+  try {
+    let q = _db.from('route_bookings').select('*').order('booked_at', {ascending:false});
+    const { data: rows, error } = await q;
+    if(error) throw error;
+    const statusColors = {pending:'badge-role', confirmed:'badge-active', out_for_delivery:'badge-active', delivered:'badge-active', cancelled:'badge-inactive'};
+    setMain(`
+      <div class="section-header">
+        <div><div class="section-title">Route Bookings</div><div class="section-sub">Customer orders for delivery · ${(rows||[]).length} bookings</div></div>
+        <button class="btn btn-primary btn-sm" onclick="openBkForm()">+ Add Booking</button>
+      </div>
+      <div class="form-panel" id="bkForm">
+        <div class="form-panel-title">✏️ <span id="bkFormTitle">Add Booking</span></div>
+        <input type="hidden" id="bkId"/>
+        <div class="form-row">
+          <div class="form-group"><label>Movement (Trip)</label>
+            <select id="bkMov"><option value="">— Select Movement —</option>${movementOpts()}</select>
+          </div>
+          <div class="form-group"><label>Product</label>
+            <select id="bkProd"><option value="">— Select Product —</option>${prodOpts()}</select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Customer</label>
+            <select id="bkCust"><option value="">— Select Customer —</option>${driverOpts()}</select>
+          </div>
+          <div class="form-group"><label>Delivery Address ID</label>
+            <input id="bkAddr" placeholder="address_id (UUID)"/>
+          </div>
+        </div>
+        <div class="form-row-3">
+          <div class="form-group"><label>Qty</label>
+            <input type="number" id="bkQty" value="1" min="1"/>
+          </div>
+          <div class="form-group"><label>Amount (₹)</label>
+            <input type="number" id="bkAmount" value="0" step="0.01"/>
+          </div>
+          <div class="form-group"><label>Status</label>
+            <select id="bkStatus">
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="out_for_delivery">Out for Delivery</option>
+              <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label>Notes</label>
+          <input id="bkNotes" placeholder="Special instructions…"/>
+        </div>
+        <div style="display:flex;gap:.75rem;align-items:center">
+          <button class="btn btn-primary" onclick="saveBk()">Save</button>
+          <button class="btn btn-ghost" onclick="closeForm('bkForm')">Cancel</button>
+          <span class="msg" id="bkMsg"></span>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap">
+        <span style="font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">Status:</span>
+        ${['','pending','confirmed','out_for_delivery','delivered','cancelled'].map(s=>
+          `<button onclick="filterBk('${s}')" id="bkF_${s||'all'}"
+            style="padding:.28rem .75rem;font-size:.68rem;font-weight:600;letter-spacing:.06em;cursor:pointer;border:1px solid var(--border);background:${s===''?'var(--accent)':'var(--bg3)'};color:${s===''?'var(--bg)':'var(--text2)'};font-family:'Outfit',sans-serif;transition:.15s">
+            ${s||'All'}
+          </button>`).join('')}
+      </div>
+
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Booked At</th><th>Movement</th><th>Product</th><th>Customer</th><th>Qty</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="bkTbody">${renderBkRows(rows||[])}</tbody>
+      </table></div>`);
+    window._bkAllRows = rows||[];
+  } catch(e){ setMain(`<div class="empty">❌ ${e.message}</div>`); }
+}
+function renderBkRows(rows){
+  if(!rows.length) return `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3)">No bookings found.</td></tr>`;
+  const sc={pending:'badge-role',confirmed:'badge-active',out_for_delivery:'badge-active',delivered:'badge-active',cancelled:'badge-inactive'};
+  return rows.map(r=>`<tr>
+    <td style="color:var(--text3);font-size:.72rem">${r.booked_at?new Date(r.booked_at).toLocaleString('en-IN',{dateStyle:'short',timeStyle:'short'}):'—'}</td>
+    <td>${movementLabel(r.movement_id)}</td>
+    <td style="font-weight:500;color:var(--text)">${prodName(r.product_id)}</td>
+    <td>${userName(r.customer_id)}</td>
+    <td style="text-align:center;font-weight:600">${r.qty||1}</td>
+    <td style="font-weight:600;color:var(--accent)">${r.amount?'₹'+Number(r.amount).toLocaleString('en-IN'):'—'}</td>
+    <td><span class="badge ${sc[r.status]||'badge-role'}">${r.status||'pending'}</span></td>
+    <td class="td-actions">
+      <button class="btn btn-ghost btn-sm" onclick='editBk(${JSON.stringify(r)})'>Edit</button>
+      <button class="btn btn-danger btn-sm" onclick="confirmDelete('route_bookings','booking_id','${r.booking_id}',showBookings)">Delete</button>
+    </td>
+  </tr>`).join('');
+}
+let _bkFilter='';
+function filterBk(status){
+  _bkFilter=status;
+  document.querySelectorAll('[id^="bkF_"]').forEach(b=>{
+    const isMe=b.id===`bkF_${status||'all'}`;
+    b.style.background=isMe?'var(--accent)':'var(--bg3)';
+    b.style.color=isMe?'var(--bg)':'var(--text2)';
+  });
+  const rows=window._bkAllRows||[];
+  document.getElementById('bkTbody').innerHTML=renderBkRows(status?rows.filter(r=>r.status===status):rows);
+}
+function openBkForm(){
+  document.getElementById('bkFormTitle').textContent='Add Booking';
+  ['bkId','bkAddr','bkNotes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('bkQty').value='1';
+  document.getElementById('bkAmount').value='0';
+  document.getElementById('bkStatus').value='pending';
+  document.getElementById('bkForm').classList.add('open');
+}
+function editBk(r){
+  document.getElementById('bkFormTitle').textContent='Edit Booking';
+  document.getElementById('bkId').value=r.booking_id;
+  document.getElementById('bkMov').value=r.movement_id||'';
+  document.getElementById('bkProd').value=r.product_id||'';
+  document.getElementById('bkCust').value=r.customer_id||'';
+  document.getElementById('bkAddr').value=r.address_id||'';
+  document.getElementById('bkQty').value=r.qty||1;
+  document.getElementById('bkAmount').value=r.amount||0;
+  document.getElementById('bkStatus').value=r.status||'pending';
+  document.getElementById('bkNotes').value=r.notes||'';
+  document.getElementById('bkForm').classList.add('open');
+}
+async function saveBk(){
+  const msg=document.getElementById('bkMsg'), id=document.getElementById('bkId').value;
+  const payload={
+    movement_id: document.getElementById('bkMov').value||null,
+    product_id:  document.getElementById('bkProd').value||null,
+    customer_id: document.getElementById('bkCust').value||null,
+    address_id:  document.getElementById('bkAddr').value.trim()||null,
+    qty:         parseInt(document.getElementById('bkQty').value)||1,
+    amount:      parseFloat(document.getElementById('bkAmount').value)||0,
+    status:      document.getElementById('bkStatus').value,
+    notes:       document.getElementById('bkNotes').value.trim()
+  };
+  msg.textContent='Saving…'; msg.className='msg';
+  const { error } = id
+    ? await _db.from('route_bookings').update(payload).eq('booking_id',id)
+    : await _db.from('route_bookings').insert(payload);
+  if(error){ msg.textContent=error.message; msg.className='msg err'; return; }
+  closeForm('bkForm'); showBookings();
+}
+
+// ══════════════════════════════════════════════
+//  SECTION: AGENT LOCATIONS (live view, read-only)
+// ══════════════════════════════════════════════
+async function showAgentLoc(){
+  setMain(`<div class="empty"><span class="spinner"></span> Loading…</div>`);
+  await loadDeliveryCaches();
+  try {
+    const { data: rows, error } = await _db.from('agent_locations').select('*');
+    if(error) throw error;
+    setMain(`
+      <div class="section-header">
+        <div>
+          <div class="section-title">Agent Locations</div>
+          <div class="section-sub">Live GPS data pushed by Flutter app · read-only · ${(rows||[]).length} agents tracked</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="showAgentLoc()">↺ Refresh</button>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);padding:.75rem 1rem;margin-bottom:1.2rem;font-size:.78rem;color:var(--text2);display:flex;align-items:center;gap:.5rem">
+        <span style="font-size:1rem">📡</span>
+        This table is updated in real-time by the Flutter mobile app. Admin panel is <strong style="color:var(--text)">read-only</strong> here.
+        Last snapshot: <strong style="color:var(--accent)">${new Date().toLocaleTimeString()}</strong>
+      </div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Driver</th><th>Movement</th><th>Lat</th><th>Lng</th><th>Online</th><th>Last Updated</th></tr></thead>
+        <tbody>${(rows||[]).length===0
+          ?`<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3)">No agent location data yet. Data arrives from the Flutter app.</td></tr>`
+          :(rows||[]).map(r=>`<tr>
+            <td style="font-weight:500;color:var(--text)">${userName(r.driver_id)}</td>
+            <td>${movementLabel(r.movement_id)}</td>
+            <td style="font-family:monospace;font-size:.75rem;color:var(--text3)">${r.lat||'—'}</td>
+            <td style="font-family:monospace;font-size:.75rem;color:var(--text3)">${r.lng||'—'}</td>
+            <td>${r.is_online
+              ?'<span class="badge badge-active">● Online</span>'
+              :'<span class="badge badge-inactive">○ Offline</span>'}</td>
+            <td style="color:var(--text3);font-size:.72rem">${r.updated_at?new Date(r.updated_at).toLocaleString('en-IN',{dateStyle:'short',timeStyle:'short'}):'—'}</td>
+          </tr>`).join('')
+        }</tbody>
+      </table></div>`);
+  } catch(e){ setMain(`<div class="empty">❌ ${e.message}</div>`); }
+}
+
+// ══════════════════════════════════════════════
+//  SECTION: USER ADDRESSES
+// ══════════════════════════════════════════════
+async function showUserAddresses(){
+  setMain(`<div class="empty"><span class="spinner"></span> Loading…</div>`);
+  try {
+    const { data: rows, error } = await _db.from('user_addresses').select('*').order('created_at',{ascending:false});
+    if(error) throw error;
+    setMain(`
+      <div class="section-header">
+        <div><div class="section-title">User Addresses</div><div class="section-sub">Customer delivery addresses · ${(rows||[]).length} total</div></div>
+        <button class="btn btn-primary btn-sm" onclick="openAddrForm()">+ Add Address</button>
+      </div>
+      <div class="form-panel" id="addrForm">
+        <div class="form-panel-title">✏️ <span id="addrFormTitle">Add Address</span></div>
+        <input type="hidden" id="afId"/>
+        <div class="form-row">
+          <div class="form-group"><label>User / Customer</label>
+            <select id="afUser"><option value="">— Select User —</option>${driverOpts()}</select>
+          </div>
+          <div class="form-group"><label>Label</label>
+            <input id="afLabel" placeholder="e.g. Home, Office, Shop"/>
+          </div>
+        </div>
+        <div class="form-group"><label>Full Address</label>
+          <textarea id="afAddress" placeholder="House no, street, area…" style="min-height:60px"></textarea>
+        </div>
+        <div class="form-group"><label>Landmark</label>
+          <input id="afLandmark" placeholder="Near…"/>
+        </div>
+        <div class="form-row-3">
+          <div class="form-group"><label>Latitude</label>
+            <input type="number" id="afLat" placeholder="11.8745" step="any"/>
+          </div>
+          <div class="form-group"><label>Longitude</label>
+            <input type="number" id="afLng" placeholder="75.3704" step="any"/>
+          </div>
+          <div class="form-group"><label>Default Address?</label>
+            <select id="afDefault"><option value="false">No</option><option value="true">Yes</option></select>
+          </div>
+        </div>
+        <div style="display:flex;gap:.75rem;align-items:center">
+          <button class="btn btn-primary" onclick="saveAddr()">Save</button>
+          <button class="btn btn-ghost" onclick="closeForm('addrForm')">Cancel</button>
+          <span class="msg" id="afMsg"></span>
+        </div>
+      </div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>User</th><th>Label</th><th>Address</th><th>Landmark</th><th>Lat</th><th>Lng</th><th>Default</th><th>Actions</th></tr></thead>
+        <tbody>${(rows||[]).length===0
+          ?`<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3)">No addresses yet.</td></tr>`
+          :(rows||[]).map(r=>`<tr>
+            <td style="font-weight:500;color:var(--text)">${userName(r.user_id)}</td>
+            <td><span class="badge badge-role">${r.label||'—'}</span></td>
+            <td style="color:var(--text2);font-size:.78rem;max-width:200px">${r.address}</td>
+            <td style="color:var(--text3);font-size:.75rem">${r.landmark||'—'}</td>
+            <td style="font-family:monospace;font-size:.72rem;color:var(--text3)">${r.lat||'—'}</td>
+            <td style="font-family:monospace;font-size:.72rem;color:var(--text3)">${r.lng||'—'}</td>
+            <td>${r.is_default?'<span class="badge badge-active">Default</span>':'—'}</td>
+            <td class="td-actions">
+              <button class="btn btn-ghost btn-sm" onclick='editAddr(${JSON.stringify(r)})'>Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="confirmDelete('user_addresses','address_id','${r.address_id}',showUserAddresses)">Delete</button>
+            </td>
+          </tr>`).join('')
+        }</tbody>
+      </table></div>`);
+  } catch(e){ setMain(`<div class="empty">❌ ${e.message}</div>`); }
+}
+function openAddrForm(){
+  document.getElementById('addrFormTitle').textContent='Add Address';
+  ['afId','afLabel','afAddress','afLandmark','afLat','afLng'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('afDefault').value='false';
+  document.getElementById('addrForm').classList.add('open');
+}
+function editAddr(r){
+  document.getElementById('addrFormTitle').textContent='Edit Address';
+  document.getElementById('afId').value=r.address_id;
+  document.getElementById('afUser').value=r.user_id||'';
+  document.getElementById('afLabel').value=r.label||'';
+  document.getElementById('afAddress').value=r.address||'';
+  document.getElementById('afLandmark').value=r.landmark||'';
+  document.getElementById('afLat').value=r.lat||'';
+  document.getElementById('afLng').value=r.lng||'';
+  document.getElementById('afDefault').value=String(r.is_default||false);
+  document.getElementById('addrForm').classList.add('open');
+}
+async function saveAddr(){
+  const msg=document.getElementById('afMsg'), id=document.getElementById('afId').value;
+  const payload={
+    user_id:    document.getElementById('afUser').value||null,
+    label:      document.getElementById('afLabel').value.trim(),
+    address:    document.getElementById('afAddress').value.trim(),
+    landmark:   document.getElementById('afLandmark').value.trim()||null,
+    lat:        parseFloat(document.getElementById('afLat').value)||null,
+    lng:        parseFloat(document.getElementById('afLng').value)||null,
+    is_default: document.getElementById('afDefault').value==='true'
+  };
+  if(!payload.address){ msg.textContent='Address is required'; msg.className='msg err'; return; }
+  msg.textContent='Saving…'; msg.className='msg';
+  const { error } = id
+    ? await _db.from('user_addresses').update(payload).eq('address_id',id)
+    : await _db.from('user_addresses').insert(payload);
+  if(error){ msg.textContent=error.message; msg.className='msg err'; return; }
+  closeForm('addrForm'); showUserAddresses();
+}
+
+// ══════════════════════════════════════════════
+//  SECTION MAP
+// ══════════════════════════════════════════════
+const sections = {
+  dashboard:     showDashboard,
+  clubs:         showClubs,
+  categories:    showCategories,
+  cat_images:    showCatImages,
+  products:      showProducts,
+  prod_images:   showProdImages,
+  prod_users:    showProdUsers,
+  shops:         showShops,
+  shop_images:   showShopImages,
+  shop_products: showShopProducts,
+  routes:        showRoutes,
+  waypoints:     showWaypoints,
+  movements:     showMovements,
+  mov_products:  showMovProducts,
+  bookings:      showBookings,
+  agent_loc:     showAgentLoc,
+  users:         showUsers,
+  user_addresses:showUserAddresses,
+  user_profiles: showUserProfiles,
+};
+</script>
+</body>
+</html>
