@@ -1,0 +1,2326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aryaprabha CoworkClub — Get It Done When You Need It</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+/* ── THEMES ── */
+:root{
+  --bg:#0d1b2a;--bg2:#132236;--bg3:#1a2e47;--surface:#1e3652;
+  --border:rgba(255,255,255,0.08);
+  --accent:#c9a84c;--accent2:#e8c96b;
+  --text:#f0ead8;--text2:#9aafbe;--text3:#5a7488;
+  --nav-bg:rgba(13,27,42,0.96);
+  --pill-bg:rgba(201,168,76,0.12);--pill-text:#c9a84c;
+  --tab-act:rgba(201,168,76,0.13);
+  --hero-grad:linear-gradient(135deg,#0d1b2a 0%,#1a2e47 60%,#0d1b2a 100%);
+}
+[data-theme="fresh"]{
+  --bg:#f7faf9;--bg2:#eef4f1;--bg3:#e3ede8;--surface:#fff;
+  --border:rgba(0,0,0,0.08);--accent:#1a7a5e;--accent2:#2da882;
+  --text:#0d2b22;--text2:#4a7060;--text3:#8aaa9a;
+  --nav-bg:rgba(247,250,249,0.96);
+  --pill-bg:rgba(26,122,94,0.1);--pill-text:#1a7a5e;
+  --tab-act:rgba(26,122,94,0.08);
+  --hero-grad:linear-gradient(135deg,#e3ede8 0%,#f7faf9 60%,#d4e8e0 100%);
+}
+[data-theme="bold"]{
+  --bg:#080808;--bg2:#101010;--bg3:#181818;--surface:#1c1c1c;
+  --border:rgba(255,255,255,0.06);--accent:#e63946;--accent2:#ff6b74;
+  --text:#f8f8f8;--text2:#888;--text3:#444;
+  --nav-bg:rgba(8,8,8,0.97);
+  --pill-bg:rgba(230,57,70,0.1);--pill-text:#e63946;
+  --tab-act:rgba(230,57,70,0.08);
+  --hero-grad:linear-gradient(135deg,#080808 0%,#181818 50%,#080808 100%);
+}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;transition:background .4s,color .4s}
+
+/* ── LOADING BAR ── */
+.lbar{height:2px;background:var(--accent);width:0;transition:width .3s;position:fixed;top:0;left:0;z-index:999}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  background:var(--nav-bg);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 4rem;height:66px;transition:background .4s;
+}
+.nav-brand{display:flex;align-items:center;gap:11px;text-decoration:none}
+.nav-logo{width:36px;height:36px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:900;font-size:1.1rem;color:var(--bg);flex-shrink:0}
+.nav-name{font-family:'Playfair Display',serif;font-size:.97rem;font-weight:700;color:var(--text);line-height:1.1}
+.nav-sub{font-size:.6rem;font-weight:600;color:var(--accent);letter-spacing:.12em;text-transform:uppercase}
+/* ── NAV LINKS as buttons ── */
+.nav-links{display:flex;gap:.5rem;align-items:center}
+.nav-links a{
+  text-decoration:none;color:var(--text2);font-size:.75rem;font-weight:500;
+  padding:.38rem .9rem;border:1px solid var(--border);
+  transition:color .2s,border-color .2s,background .2s;
+  white-space:nowrap;
+}
+.nav-links a:hover{color:var(--text);border-color:var(--accent);background:var(--tab-act)}
+.nav-links a.active{color:var(--accent);border-color:var(--accent);background:var(--tab-act)}
+.nav-links a.highlight{
+  color:var(--bg);background:var(--accent);border-color:var(--accent);font-weight:600;
+}
+.nav-links a.highlight:hover{opacity:.85}
+
+/* ── REGION SELECTOR (the key new component) ── */
+.region-selector{
+  position:relative;display:flex;align-items:center;
+}
+.region-btn{
+  display:flex;align-items:center;gap:7px;
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--text);padding:.38rem .9rem;
+  font-family:'Outfit',sans-serif;font-size:.78rem;font-weight:500;
+  cursor:pointer;transition:border-color .2s,background .2s;
+  white-space:nowrap;
+}
+.region-btn:hover{border-color:var(--accent)}
+.region-btn .rflag{font-size:.9rem}
+.region-btn .rname{max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.region-btn .chevron{
+  font-size:.6rem;color:var(--text3);
+  transition:transform .2s;margin-left:2px;
+}
+.region-btn.open .chevron{transform:rotate(180deg)}
+
+/* dropdown */
+.region-dropdown{
+  position:absolute;top:calc(100% + 6px);left:0;
+  background:var(--bg2);border:1px solid var(--border);
+  min-width:240px;z-index:300;
+  box-shadow:0 8px 24px rgba(0,0,0,.3);
+  display:none;
+}
+.region-dropdown.open{display:block}
+.region-option{
+  display:flex;align-items:center;gap:10px;
+  padding:.75rem 1rem;cursor:pointer;
+  font-size:.82rem;transition:background .15s;
+  border-bottom:1px solid var(--border);
+}
+.region-option:last-child{border-bottom:none}
+.region-option:hover{background:var(--bg3)}
+.region-option.active{background:var(--tab-act)}
+.region-option.active .ro-name{color:var(--accent)}
+.ro-flag{font-size:1rem;flex-shrink:0}
+.ro-info{flex:1}
+.ro-name{font-weight:500;color:var(--text)}
+.ro-status{
+  font-size:.62rem;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;margin-top:1px;
+}
+.ro-status.active{color:var(--accent)}
+.ro-status.launching{color:var(--accent2)}
+.ro-status.upcoming{color:var(--text3)}
+.ro-check{color:var(--accent);font-size:.8rem;opacity:0}
+.region-option.active .ro-check{opacity:1}
+
+/* IP notice */
+.ip-notice{
+  padding:.6rem 1rem;
+  font-size:.68rem;color:var(--text3);
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;gap:6px;
+}
+.ip-notice::before{content:'📍';font-size:.75rem}
+
+.nav-right{display:flex;align-items:center;gap:12px}
+.theme-switcher{display:flex;gap:5px}
+.tbtn{width:20px;height:20px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .2s,border-color .2s}
+.tbtn:hover{transform:scale(1.2)}
+.tbtn.on{border-color:var(--text)}
+.tbtn[data-t="dark"] {background:linear-gradient(135deg,#0d1b2a,#c9a84c)}
+.tbtn[data-t="fresh"]{background:linear-gradient(135deg,#f7faf9,#1a7a5e)}
+.tbtn[data-t="bold"] {background:linear-gradient(135deg,#080808,#e63946)}
+.nav-cta{background:var(--accent);color:var(--bg);border:none;padding:.52rem 1.3rem;font-family:'Outfit',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;transition:opacity .2s,transform .15s}
+.nav-cta:hover{opacity:.85;transform:translateY(-1px)}
+
+/* ── HERO ── */
+.hero{min-height:60vh;background:var(--hero-grad);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:5rem 4rem;position:relative;overflow:hidden}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:56px 56px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--pill-bg);border:1px solid var(--accent);color:var(--accent);font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:.32rem .9rem;margin-bottom:1.8rem}
+.hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.5)}}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(2.8rem,6vw,5.4rem);font-weight:900;line-height:1.0;letter-spacing:-.03em;margin-bottom:.75rem;max-width:860px}
+.hero h1 .ac{color:var(--accent)}
+.hero h1 .it{font-style:italic}
+.hero-hook{font-size:clamp(1rem,2vw,1.35rem);color:var(--text2);font-weight:300;max-width:600px;margin:0 auto 1rem;line-height:1.65}
+.hero-hook strong{color:var(--text);font-weight:500}
+.dual-mode{display:inline-flex;border:1px solid var(--border);overflow:hidden;margin:1.2rem 0 2rem}
+.dm-half{padding:.55rem 1.4rem;font-size:.82rem;font-weight:500;letter-spacing:.04em;display:flex;align-items:center;gap:7px}
+.dm-half:first-child{background:var(--pill-bg);color:var(--accent);border-right:1px solid var(--border)}
+.dm-half:last-child{color:var(--text2)}
+.dm-or{padding:.55rem .5rem;font-size:.72rem;font-weight:700;color:var(--text3);background:var(--bg2);border-left:1px solid var(--border);border-right:1px solid var(--border);display:flex;align-items:center}
+.hero-actions{display:flex;gap:.9rem;justify-content:center}
+.btn-p{background:var(--accent);color:var(--bg);border:none;padding:.85rem 2rem;font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;transition:opacity .2s,transform .15s}
+.btn-p:hover{opacity:.86;transform:translateY(-2px)}
+.btn-o{background:transparent;color:var(--text);border:1px solid var(--border);padding:.85rem 2rem;font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:border-color .2s,color .2s}
+.btn-o:hover{border-color:var(--accent);color:var(--accent)}
+.scroll-hint{position:absolute;bottom:2.2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:5px;color:var(--text3);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase}
+.scroll-hint::after{content:'';width:1px;height:36px;background:linear-gradient(to bottom,var(--accent),transparent);animation:sl 1.6s ease-in-out infinite}
+@keyframes sl{0%{opacity:0;transform:scaleY(0);transform-origin:top}50%{opacity:1;transform:scaleY(1)}100%{opacity:0}}
+
+/* ── STRIP ── */
+.strip{background:var(--accent);padding:1.1rem 4rem;display:flex;align-items:center;justify-content:center;gap:2.5rem;flex-wrap:wrap}
+.strip-item{font-size:.7rem;font-weight:700;color:var(--bg);letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:center;gap:.4rem}
+
+/* ── REGION CONTEXT BAR ── */
+.region-bar{
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  padding:.75rem 4rem;
+  display:flex;align-items:center;justify-content:space-between;
+  transition:background .4s;
+}
+.rb-left{display:flex;align-items:center;gap:10px;font-size:.82rem;color:var(--text2)}
+.rb-flag{font-size:1.1rem}
+.rb-name{font-weight:600;color:var(--text)}
+.rb-status{
+  font-size:.62rem;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;
+  background:var(--pill-bg);color:var(--pill-text);
+  border:1px solid var(--accent);
+  padding:.18rem .55rem;
+}
+.rb-clubs-count{font-size:.78rem;color:var(--text3)}
+.rb-right{font-size:.75rem;color:var(--text3);display:flex;align-items:center;gap:6px}
+.rb-change{
+  color:var(--accent);cursor:pointer;font-weight:500;
+  text-decoration:underline;text-decoration-style:dotted;
+  font-size:.75rem;
+}
+
+/* ── EXPLAINER ── */
+.explainer{padding:6rem 4rem;background:var(--bg2);display:grid;grid-template-columns:1fr 1fr;gap:1px;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.exp-half{padding:3.5rem 3rem}
+.exp-half:first-child{border-right:1px solid var(--border)}
+.exp-tag{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
+.exp-tag::before{content:'';width:20px;height:1px;background:var(--accent)}
+.exp-half h3{font-family:'Playfair Display',serif;font-size:clamp(1.4rem,2.5vw,2rem);font-weight:900;line-height:1.1;letter-spacing:-.02em;margin-bottom:.9rem}
+.exp-half p{font-size:.93rem;color:var(--text2);line-height:1.8;margin-bottom:1.25rem}
+.exp-example{background:var(--bg3);border:1px solid var(--border);border-left:3px solid var(--accent);padding:1rem 1.2rem;margin-bottom:1.5rem}
+.ex-label{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:.4rem}
+.exp-example p{font-size:.83rem;color:var(--text2);line-height:1.7;margin:0}
+.exp-example p em{color:var(--text);font-style:normal;font-weight:500}
+.exp-tags{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.75rem}
+.etag{font-size:.68rem;font-weight:600;background:var(--pill-bg);color:var(--pill-text);border:1px solid var(--accent);padding:.22rem .6rem}
+
+/* ── CLUBS ── */
+.clubs-sec{padding:6rem 4rem;background:var(--bg)}
+.sec-head{text-align:center;margin-bottom:3.5rem}
+.sec-eye{font-size:.7rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:.7rem}
+.sec-title{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3.5vw,2.7rem);font-weight:900;line-height:1.1;letter-spacing:-.02em}
+.sec-sub{font-size:.93rem;color:var(--text2);margin-top:.65rem;max-width:520px;margin-left:auto;margin-right:auto}
+
+/* region switching animation */
+.clubs-inner{transition:opacity .25s,transform .25s}
+.clubs-inner.switching{opacity:0;transform:translateY(8px)}
+
+.club-tabs{display:flex;justify-content:center;margin-bottom:3rem;border:1px solid var(--border);width:fit-content;margin-left:auto;margin-right:auto;overflow:hidden}
+.ctab{display:flex;flex-direction:column;align-items:center;gap:5px;padding:.9rem 1.8rem;cursor:pointer;background:transparent;border:none;border-right:1px solid var(--border);font-family:'Outfit',sans-serif;position:relative;transition:background .2s;min-width:110px}
+.ctab:last-child{border-right:none}
+.ctab:hover{background:var(--bg3)}
+.ctab.on{background:var(--tab-act)}
+.ctab.on::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--accent)}
+.ctab-icon{width:34px;height:34px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.95rem;transition:background .2s}
+.ctab.on .ctab-icon{background:var(--accent);border-color:var(--accent)}
+.ctab-word{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)}
+.ctab.on .ctab-word{color:var(--accent)}
+.ctab-name{font-size:.75rem;font-weight:500;color:var(--text2)}
+.ctab.on .ctab-name{color:var(--text)}
+
+.cpanel{display:none}
+.cpanel.on{display:grid;grid-template-columns:1.1fr 1fr;gap:3rem;align-items:start}
+
+/* slider */
+.strack{overflow:hidden;border:1px solid var(--border);position:relative;height:320px}
+.sslides{display:flex;height:100%;transition:transform .45s cubic-bezier(.4,0,.2,1);will-change:transform}
+.slide{min-width:100%;width:100%;height:320px;display:flex;align-items:flex-end;padding:1.75rem;position:relative;overflow:hidden;flex-shrink:0}
+.slide-bg{position:absolute;inset:0}
+.slide-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background-size:cover;background-position:center}
+.scap{position:relative;z-index:2;background:rgba(0,0,0,.52);backdrop-filter:blur(8px);padding:.7rem 1rem;border-left:3px solid var(--accent)}
+.scap h4{font-size:.9rem;font-weight:600;color:#fff}
+.scap p{font-size:.75rem;color:rgba(255,255,255,.68);margin-top:2px}
+.sctrl{display:flex;align-items:center;gap:.7rem;margin-top:.65rem}
+.sbtn{width:34px;height:34px;background:var(--surface);border:1px solid var(--border);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:background .2s}
+.sbtn:hover{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.sdots{display:flex;gap:5px;align-items:center}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--text3);cursor:pointer;transition:background .2s,transform .2s}
+.dot.on{background:var(--accent);transform:scale(1.4)}
+
+.cinfo{padding:.25rem 0}
+.cinfo-badge{display:inline-flex;align-items:center;gap:7px;background:var(--pill-bg);color:var(--accent);border:1px solid var(--accent);font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.28rem .75rem;margin-bottom:1.1rem}
+.cinfo h3{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;line-height:1.1;letter-spacing:-.02em;margin-bottom:.3rem}
+.cinfo-tagline{font-size:.85rem;color:var(--accent);font-weight:500;letter-spacing:.04em;margin-bottom:.9rem}
+.cinfo-desc{font-size:.9rem;color:var(--text2);line-height:1.8;margin-bottom:1.25rem}
+.cfeats{display:flex;flex-direction:column;gap:0;margin-bottom:1.4rem}
+.cfeat{display:flex;align-items:flex-start;gap:11px;padding:.7rem 0;border-bottom:1px solid var(--border)}
+.cfeat:first-child{border-top:1px solid var(--border)}
+.fi{width:26px;height:26px;flex-shrink:0;background:var(--pill-bg);display:flex;align-items:center;justify-content:center;font-size:.8rem}
+.ft strong{font-size:.82rem;font-weight:600;display:block}
+.ft span{font-size:.78rem;color:var(--text2)}
+.cbtns{display:flex;gap:.65rem}
+.bsm{padding:.6rem 1.4rem;font-family:'Outfit',sans-serif;font-size:.76rem;font-weight:600;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;transition:opacity .2s,transform .15s}
+.bsm:hover{opacity:.84;transform:translateY(-1px)}
+.bsm.p{background:var(--accent);color:var(--bg);border:none}
+.bsm.g{background:transparent;color:var(--text);border:1px solid var(--border)}
+.bsm.g:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── WHY ── */
+.why{padding:6rem 4rem;background:var(--bg2);display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+.why h2{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3vw,2.5rem);font-weight:900;line-height:1.1;letter-spacing:-.02em;margin-bottom:1.1rem;margin-top:.75rem}
+.why p{font-size:.93rem;color:var(--text2);line-height:1.8;margin-bottom:.9rem}
+.why p strong{color:var(--text);font-weight:600}
+.why-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border)}
+.wcard{background:var(--bg);padding:1.75rem 1.4rem;transition:background .2s}
+.wcard:hover{background:var(--bg3)}
+.wcard-icon{width:40px;height:40px;background:var(--pill-bg);display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:.65rem}
+.wcard h4{font-size:.88rem;font-weight:600;margin-bottom:.3rem}
+.wcard p{font-size:.78rem;color:var(--text2);line-height:1.6;margin:0}
+
+/* ── MARKETPLACE ── */
+.market{padding:5rem 4rem;background:var(--bg3);display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;border-top:1px solid var(--border)}
+.mkt-eye{font-size:.7rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:.7rem}
+.mkt-title{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,3vw,2.4rem);font-weight:900;line-height:1.1;letter-spacing:-.02em;margin-bottom:1rem}
+.mkt-desc{font-size:.93rem;color:var(--text2);line-height:1.8;margin-bottom:1.5rem}
+.mkt-feats{display:flex;flex-direction:column;gap:.5rem}
+.mkt-feat{display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--text2)}
+.mkt-feat::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.mkt-visual{background:var(--bg2);border:1px solid var(--border);padding:2.5rem;display:flex;flex-direction:column;align-items:center;min-height:220px;text-align:center;gap:.75rem;justify-content:center}
+.dl-badges{display:flex;gap:.65rem;margin-top:.5rem}
+.dlb{padding:.45rem 1rem;border:1px solid var(--border);font-size:.72rem;font-weight:600;color:var(--text2)}
+
+/* ── REGIONS ── */
+.regions{padding:5rem 4rem;background:var(--bg2);text-align:center}
+.rcards{display:flex;gap:1px;background:var(--border);border:1px solid var(--border);max-width:900px;margin:2.5rem auto 0}
+.rcard{flex:1;background:var(--bg);padding:2.2rem 1.6rem;text-align:center;transition:background .2s;cursor:pointer}
+.rcard:hover{background:var(--bg3)}
+.rcard.current{background:var(--tab-act)}
+.rflag{font-size:2.2rem;margin-bottom:.65rem}
+.rname{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:.2rem}
+.rstatus{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.rstatus.active{color:var(--accent)}
+.rstatus.launching{color:var(--accent2)}
+.rstatus.upcoming{color:var(--text3)}
+.rline{width:28px;height:2px;background:var(--accent);margin:.65rem auto}
+.rdesc{font-size:.78rem;color:var(--text2);line-height:1.6}
+
+/* ── CTA ── */
+.cta-sec{padding:6rem 4rem;background:var(--bg);text-align:center;position:relative;overflow:hidden}
+.cta-sec::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,var(--pill-bg) 0%,transparent 68%);pointer-events:none}
+.cta-sec h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3.4rem);font-weight:900;letter-spacing:-.02em;margin-bottom:.9rem;position:relative}
+.cta-sec h2 em{font-style:italic;color:var(--accent)}
+.cta-sec p{font-size:.98rem;color:var(--text2);max-width:480px;margin:0 auto 2.5rem;position:relative}
+.cta-sec .hero-actions{justify-content:center;position:relative}
+
+/* ── FOOTER ── */
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 4rem 2rem}
+.footer-top{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:3rem;padding-bottom:2rem;border-bottom:1px solid var(--border);margin-bottom:2rem}
+.fbname{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900;margin-bottom:.2rem}
+.fbsub{font-size:.62rem;color:var(--accent);font-weight:600;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.9rem}
+.fbdesc{font-size:.82rem;color:var(--text2);line-height:1.7}
+.fcol h5{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:.9rem}
+.fcol a{display:block;text-decoration:none;color:var(--text2);font-size:.82rem;padding:.22rem 0;transition:color .2s}
+.fcol a:hover{color:var(--text)}
+.fbottom{display:flex;justify-content:space-between;align-items:center;font-size:.76rem;color:var(--text3)}
+.furl{color:var(--accent);font-weight:600}
+
+/* ── CLUB LANDING SECTION ── */
+.club-landing{background:var(--bg);border-bottom:1px solid var(--border)}
+
+/* compact submenu club tabs — sits directly under nav like a secondary menubar */
+/* ── SUB CLUB TAB BAR ── */
+.clt-tabs{
+  display:flex;align-items:center;background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  padding:.6rem 4rem;gap:.5rem;overflow-x:auto;
+  scrollbar-width:none;
+  position:sticky;top:66px;z-index:100;
+}
+.clt-tabs::-webkit-scrollbar{display:none}
+.clt-tab{
+  display:flex;align-items:center;gap:7px;
+  padding:.55rem 1.3rem;cursor:pointer;
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:2px;
+  font-family:'Outfit',sans-serif;font-size:.8rem;font-weight:500;
+  color:var(--text2);white-space:nowrap;
+  transition:color .15s,border-color .15s,background .15s,transform .1s;
+}
+.clt-tab:hover:not(:disabled){color:var(--text);border-color:var(--accent);background:var(--tab-act);transform:translateY(-1px)}
+.clt-tab.on{color:var(--accent);border-color:var(--accent);background:var(--tab-act);font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.clt-tab:disabled{opacity:.35;cursor:not-allowed}
+.clt-tab-icon{font-size:1rem}
+.clt-tab-label{font-size:.8rem}
+
+/* full-width hero slider */
+.clt-slider-wrap{position:relative;height:340px;overflow:hidden;background:var(--bg3)}
+.clt-slides{display:flex;height:100%;transition:transform .5s cubic-bezier(.4,0,.2,1);will-change:transform}
+.clt-slide{min-width:100%;height:340px;position:relative;flex-shrink:0;overflow:hidden}
+.clt-slide-bg{position:absolute;inset:0;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center}
+.clt-slide-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.7) 0%,rgba(0,0,0,.2) 60%,transparent 100%)}
+.clt-slide-content{position:absolute;bottom:2.5rem;left:4rem;right:40%;z-index:2}
+.clt-slide-club{font-size:.62rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}
+.clt-slide-title{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,3vw,2.4rem);font-weight:900;color:#fff;line-height:1.1;margin-bottom:.4rem}
+.clt-slide-sub{font-size:.9rem;color:rgba(255,255,255,.75);line-height:1.5}
+.clt-slide-nav{position:absolute;bottom:1.5rem;right:4rem;display:flex;align-items:center;gap:.5rem;z-index:2}
+.clt-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.35);cursor:pointer;transition:background .2s,transform .2s}
+.clt-dot.on{background:var(--accent);transform:scale(1.4)}
+.clt-arrow{width:36px;height:36px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.2);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:background .2s}
+.clt-arrow:hover{background:var(--accent);border-color:var(--accent)}
+
+/* below-slider area: marketing cards OR product listing */
+.clt-below{padding:3rem 4rem;background:var(--bg)}
+
+/* marketing overview cards (default view) */
+.mkt-overview{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);border:1px solid var(--border)}
+.mkt-card{
+  background:var(--bg);padding:1.5rem 1.2rem;text-align:center;
+  cursor:pointer;transition:background .2s,transform .15s;
+  display:flex;flex-direction:column;align-items:center;gap:.5rem;
+  position:relative;
+}
+.mkt-card:hover{background:var(--bg3)}
+.mkt-card:hover .mkt-card-arrow{opacity:1;transform:translateX(3px)}
+.mkt-card.active{background:var(--tab-act);border-bottom:2px solid var(--accent)}
+.mkt-card-img{width:48px;height:48px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.4rem;transition:background .2s,border-color .2s}
+.mkt-card:hover .mkt-card-img{border-color:var(--accent)}
+.mkt-card.active .mkt-card-img{background:var(--accent);border-color:var(--accent)}
+.mkt-card-name{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text2)}
+.mkt-card.active .mkt-card-name{color:var(--accent)}
+.mkt-card-pitch{font-size:.75rem;color:var(--text3);line-height:1.5}
+.mkt-card-arrow{font-size:.8rem;color:var(--accent);opacity:0;transition:opacity .2s,transform .2s;margin-top:.2rem}
+
+/* product listing view */
+.prod-listing{display:none}
+.prod-listing.on{display:block}
+.prod-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:1.5rem;padding-bottom:1rem;
+  border-bottom:1px solid var(--border);
+  flex-wrap:wrap;gap:.75rem;
+}
+.prod-header-left{display:flex;align-items:center;gap:12px}
+.prod-club-icon{width:40px;height:40px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.prod-header h3{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;margin:0}
+.prod-header-sub{font-size:.72rem;color:var(--text3);margin-top:2px}
+.prod-back{background:transparent;border:1px solid var(--border);color:var(--text2);padding:.38rem .9rem;font-family:'Outfit',sans-serif;font-size:.73rem;cursor:pointer;transition:border-color .2s,color .2s;white-space:nowrap}
+.prod-back:hover{border-color:var(--accent);color:var(--accent)}
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.9rem}
+.prod-card{
+  background:var(--surface);border:1px solid var(--border);
+  padding:1.2rem;display:flex;flex-direction:column;gap:.4rem;
+  transition:border-color .2s,transform .15s;
+}
+.prod-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.prod-card-tag{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.prod-card-name{font-size:.92rem;font-weight:600;color:var(--text);line-height:1.3}
+.prod-card-desc{font-size:.78rem;color:var(--text2);line-height:1.6;flex:1}
+.prod-card-badges{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.3rem}
+.prod-badge{font-size:.58rem;font-weight:600;padding:.18rem .5rem;border:1px solid var(--border);color:var(--text3);letter-spacing:.06em;text-transform:uppercase}
+.prod-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:.7rem;padding-top:.7rem;border-top:1px solid var(--border)}
+.prod-card-price{font-size:1.05rem;font-weight:700;color:var(--text)}
+.prod-card-price.free{color:var(--accent)}
+.prod-enroll{padding:.42rem 1rem;font-family:'Outfit',sans-serif;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;transition:opacity .2s,transform .15s;border:none}
+.prod-enroll.paid{background:var(--accent);color:var(--bg)}
+.prod-enroll.free-btn{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.prod-enroll:hover{opacity:.82;transform:translateY(-1px)}
+.prod-loading{text-align:center;padding:3rem 2rem;color:var(--text3);font-size:.85rem;line-height:1.8}
+
+/* ── AUTH MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.65);
+  z-index:500;display:none;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);
+}
+.modal-overlay.open{display:flex}
+.modal-box{
+  background:var(--bg2);border:1px solid var(--border);
+  width:100%;max-width:420px;padding:2rem;position:relative;
+}
+.modal-close{
+  position:absolute;top:.75rem;right:.75rem;
+  background:transparent;border:none;color:var(--text3);
+  font-size:1.2rem;cursor:pointer;line-height:1;
+}
+.modal-close:hover{color:var(--text)}
+.modal-title{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;margin-bottom:1.5rem}
+.modal-tabs{display:flex;gap:0;margin-bottom:1.5rem;border:1px solid var(--border)}
+.modal-tab{
+  flex:1;padding:.5rem;text-align:center;cursor:pointer;
+  font-size:.78rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  background:transparent;border:none;color:var(--text3);
+  font-family:'Outfit',sans-serif;transition:background .2s,color .2s;
+}
+.modal-tab.on{background:var(--accent);color:var(--bg)}
+.modal-form{display:flex;flex-direction:column;gap:.85rem}
+.modal-form input{
+  width:100%;padding:.65rem .9rem;
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--text);font-family:'Outfit',sans-serif;font-size:.85rem;
+  outline:none;transition:border-color .2s;
+}
+.modal-form input:focus{border-color:var(--accent)}
+.modal-form input::placeholder{color:var(--text3)}
+.modal-btn{
+  background:var(--accent);color:var(--bg);border:none;
+  padding:.75rem;font-family:'Outfit',sans-serif;
+  font-size:.85rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  cursor:pointer;transition:opacity .2s;margin-top:.3rem;
+}
+.modal-btn:hover{opacity:.85}
+.modal-btn:disabled{opacity:.5;cursor:not-allowed}
+.modal-msg{font-size:.78rem;min-height:1.2rem;text-align:center;margin-top:.3rem}
+.modal-msg.ok{color:var(--accent)}
+.modal-msg.err{color:#e63946}
+.modal-divider{font-size:.72rem;color:var(--text3);text-align:center;margin:.3rem 0}
+
+/* ── ADD PRODUCT MODAL ── */
+.prod-modal-box{max-width:520px}
+.modal-form select{
+  width:100%;padding:.65rem .9rem;
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--text);font-family:'Outfit',sans-serif;font-size:.85rem;
+  outline:none;transition:border-color .2s;
+}
+.modal-form select:focus{border-color:var(--accent)}
+.modal-form textarea{
+  width:100%;padding:.65rem .9rem;resize:vertical;min-height:80px;
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--text);font-family:'Outfit',sans-serif;font-size:.85rem;
+  outline:none;transition:border-color .2s;
+}
+.modal-form textarea:focus{border-color:var(--accent)}
+.modal-form label{font-size:.72rem;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:-.4rem}
+
+/* ── NAV USER STATE ── */
+.nav-user{display:flex;align-items:center;gap:.6rem}
+.nav-user-name{font-size:.75rem;color:var(--accent);font-weight:600;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nav-signout{background:transparent;border:1px solid var(--border);color:var(--text2);padding:.38rem .75rem;font-family:'Outfit',sans-serif;font-size:.72rem;cursor:pointer;transition:border-color .2s,color .2s}
+.nav-signout:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── ADD PRODUCT BTN in prod header ── */
+.prod-add-btn{
+  background:transparent;border:1px solid var(--accent);color:var(--accent);
+  padding:.38rem .9rem;font-family:'Outfit',sans-serif;font-size:.72rem;
+  font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;
+  transition:background .2s,color .2s;
+}
+.prod-add-btn:hover{background:var(--accent);color:var(--bg)}
+
+@keyframes shimmer{0%,100%{opacity:.4}50%{opacity:.8}}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+.hero-badge{animation:fadeUp .5s ease both}
+.hero h1  {animation:fadeUp .5s .1s ease both}
+.hero-hook{animation:fadeUp .5s .2s ease both}
+.dual-mode{animation:fadeUp .5s .3s ease both}
+.hero-actions{animation:fadeUp .5s .4s ease both}
+
+/* ── ROUTES SECTION ── */
+.routes-sec{padding:5rem 4rem;background:var(--bg2);text-align:center}
+.routes-sec .sec-sub{margin-bottom:2.5rem}
+
+/* Route grid */
+.route-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:1px;background:var(--border);
+  border:1px solid var(--border);
+  max-width:1100px;margin:0 auto 0;
+  text-align:left;
+}
+.route-card{
+  background:var(--bg);padding:1.6rem 1.4rem;
+  cursor:pointer;transition:background .2s,transform .15s;
+  display:flex;flex-direction:column;gap:.5rem;
+  position:relative;overflow:hidden;
+}
+.route-card::before{
+  content:'';position:absolute;top:0;left:0;
+  width:3px;height:100%;background:var(--accent);
+  transform:scaleY(0);transform-origin:top;
+  transition:transform .2s;
+}
+.route-card:hover{background:var(--bg3);transform:translateY(-2px)}
+.route-card:hover::before{transform:scaleY(1)}
+.route-card.selected{background:var(--tab-act)}
+.route-card.selected::before{transform:scaleY(1)}
+.rc-icon{font-size:1.6rem;margin-bottom:.2rem}
+.rc-name{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--text)}
+.rc-desc{font-size:.78rem;color:var(--text2);line-height:1.6}
+.rc-meta{display:flex;align-items:center;gap:.5rem;margin-top:.3rem;flex-wrap:wrap}
+.rc-badge{
+  font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:.18rem .55rem;border:1px solid var(--accent);
+  color:var(--accent);background:var(--pill-bg);
+}
+.rc-wpt-count{font-size:.7rem;color:var(--text3)}
+.rc-arrow{
+  margin-top:auto;align-self:flex-end;
+  font-size:.75rem;color:var(--accent);
+  opacity:0;transition:opacity .2s;
+}
+.route-card:hover .rc-arrow,.route-card.selected .rc-arrow{opacity:1}
+
+/* Route map panel */
+.route-map-panel{
+  max-width:1100px;margin:2rem auto 0;
+  border:1px solid var(--border);
+  background:var(--bg);
+  animation:fadeUp .3s ease;
+}
+.rmp-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 1.4rem;border-bottom:1px solid var(--border);
+  flex-wrap:wrap;gap:.75rem;
+}
+.rmp-header-left{display:flex;align-items:center;gap:1rem}
+.rmp-back{
+  background:transparent;border:1px solid var(--border);
+  color:var(--text2);padding:.38rem .85rem;
+  font-family:'Outfit',sans-serif;font-size:.75rem;
+  cursor:pointer;transition:border-color .2s,color .2s;white-space:nowrap;
+}
+.rmp-back:hover{border-color:var(--accent);color:var(--accent)}
+.rmp-route-name{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900;color:var(--text)}
+.rmp-route-sub{font-size:.72rem;color:var(--text3);margin-top:2px}
+.rmp-body{
+  display:grid;grid-template-columns:1fr 280px;
+  min-height:420px;
+}
+.rmp-map-wrap{
+  position:relative;border-right:1px solid var(--border);
+  min-height:420px;
+}
+.rmp-map-loading{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--bg3);
+}
+.rmp-wpts{padding:1.2rem;overflow-y:auto;max-height:420px}
+.rmp-wpts-title{
+  font-size:.65rem;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:.9rem;
+}
+.rmp-wpts-list{display:flex;flex-direction:column;gap:0}
+.rmp-wpt-item{
+  display:flex;align-items:flex-start;gap:.75rem;
+  padding:.65rem 0;border-bottom:1px solid var(--border);
+  position:relative;
+}
+.rmp-wpt-item:last-child{border-bottom:none}
+.rmp-wpt-num{
+  width:22px;height:22px;border-radius:50%;
+  background:var(--accent);color:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.6rem;font-weight:800;flex-shrink:0;margin-top:1px;
+}
+.rmp-wpt-info{}
+.rmp-wpt-name{font-size:.82rem;font-weight:600;color:var(--text)}
+.rmp-wpt-coord{font-size:.65rem;font-family:monospace;color:var(--text3);margin-top:1px}
+
+/* Leaflet overrides for theme */
+.leaflet-container{background:var(--bg2)!important}
+.leaflet-tile{filter:brightness(.85) saturate(.7)}
+[data-theme="fresh"] .leaflet-tile{filter:none}
+
+@media(max-width:960px){
+  nav{padding:0 1.2rem}.nav-links{display:none}
+  .hero,.clubs-sec,.why,.market,.routes-sec,.cta-sec,.explainer,footer,.region-bar{padding-left:1.5rem;padding-right:1.5rem}
+  .rmp-body{grid-template-columns:1fr}
+  .rmp-map-wrap{min-height:280px;border-right:none;border-bottom:1px solid var(--border)}
+  .route-grid{grid-template-columns:1fr}
+  .explainer{grid-template-columns:1fr}
+  .exp-half:first-child{border-right:none;border-bottom:1px solid var(--border)}
+  .cpanel.on{grid-template-columns:1fr}
+  .club-tabs{overflow-x:auto;max-width:100%}
+  .why{grid-template-columns:1fr}
+  .market{grid-template-columns:1fr}
+  .rcards{flex-direction:column}
+  .footer-top{grid-template-columns:1fr;gap:2rem}
+  .fbottom{flex-direction:column;gap:.5rem;text-align:center}
+  .clt-tabs{padding:0 1rem}
+  .clt-below{padding:2rem 1.5rem}
+  .mkt-overview{grid-template-columns:repeat(2,1fr)}
+  .clt-slide-content{left:1.5rem;right:1.5rem}
+  .clt-slide-nav{right:1.5rem}
+  .prod-grid{grid-template-columns:1fr}
+}
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+</head>
+<body data-theme="dark">
+
+<div class="lbar" id="lbar"></div>
+
+<!-- NAV -->
+<nav>
+  <div style="display:flex;align-items:center;gap:10px">
+    <a class="nav-brand" href="#" style="text-decoration:none">
+      <div class="nav-logo">A</div>
+    </a>
+    <div style="width:1px;height:28px;background:var(--border)"></div>
+    <div class="region-selector" id="regionSelector">
+      <button class="region-btn" id="regionBtn" onclick="toggleRegionDropdown()">
+        <span class="rflag" id="btnFlag">🌐</span>
+        <span class="rname" id="btnName">Loading...</span>
+        <span class="chevron">▼</span>
+      </button>
+      <div class="region-dropdown" id="regionDropdown">
+        <div class="ip-notice">Showing clubs available in your region</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-links">
+    <a href="#explainer">How It Works</a>
+    <a href="#why">Why Us</a>
+    <a href="#marketplace" class="highlight">Marketplace</a>
+    <a href="#routes">Routes</a>
+  </div>
+
+  <div class="nav-right">
+    <div class="theme-switcher">
+      <div class="tbtn on" data-t="dark"  onclick="setTheme('dark',this)"  title="Professional Dark"></div>
+      <div class="tbtn"    data-t="fresh" onclick="setTheme('fresh',this)" title="Fresh Modern"></div>
+      <div class="tbtn"    data-t="bold"  onclick="setTheme('bold',this)"  title="Bold Minimal"></div>
+    </div>
+    <button class="nav-cta" id="navAuthBtn" onclick="openAuthModal()">Join Now</button>
+    <div class="nav-user" id="navUser" style="display:none">
+      <span class="nav-user-name" id="navUserName"></span>
+      <button class="nav-signout" onclick="signOut()">Sign Out</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ CLUB LANDING ══ -->
+<section class="club-landing" id="clubLanding">
+
+  <!-- Club Tabs Bar -->
+  <div class="clt-tabs" id="cltTabs">
+    <div class="skel" style="width:600px;height:46px;margin:.5rem 0"></div>
+  </div>
+
+  <!-- Hero Slider (full width, club-specific) -->
+  <div class="clt-slider-wrap" id="cltSliderWrap">
+    <div class="clt-slides" id="cltSlides">
+      <div class="clt-slide">
+        <div class="clt-slide-bg" style="background:linear-gradient(135deg,var(--bg3),var(--bg));display:flex;align-items:center;justify-content:center"><span style="font-size:5rem;opacity:.3">🏛️</span></div>
+        <div class="clt-slide-overlay"></div>
+        <div class="clt-slide-content"><div class="clt-slide-club">Loading...</div><div class="clt-slide-title">Your Club</div></div>
+      </div>
+    </div>
+    <div class="clt-slide-nav" id="cltSlideNav"></div>
+  </div>
+
+  <!-- Below Slider: Product Listing only -->
+  <div class="clt-below">
+
+    <!-- Product listing — shown on club tab click, hidden by default -->
+    <div class="prod-listing" id="prodListing">
+      <div class="prod-header">
+        <div class="prod-header-left">
+          <div class="prod-club-icon" id="prodIcon">●</div>
+          <div>
+            <h3 id="prodTitle">Club Products</h3>
+            <div class="prod-header-sub" id="prodSub">Select a club above to view products</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+          <div style="display:flex;border:1px solid var(--border);overflow:hidden">
+            <button id="filterE" onclick="setFilter('E')"
+              style="padding:.35rem .8rem;font-size:.7rem;font-weight:600;font-family:'Outfit',sans-serif;cursor:pointer;border:none;background:var(--accent);color:var(--bg);letter-spacing:.05em">
+              Community
+            </button>
+            <button id="filterAll" onclick="setFilter('all')"
+              style="padding:.35rem .8rem;font-size:.7rem;font-weight:600;font-family:'Outfit',sans-serif;cursor:pointer;border:none;background:var(--bg3);color:var(--text2);letter-spacing:.05em">
+              All
+            </button>
+          </div>
+          <button class="prod-add-btn" id="addProdBtn" onclick="openAddProduct()" style="display:none">+ Add</button>
+        </div>
+      </div>
+      <div class="prod-grid" id="prodGrid"></div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- REGION CONTEXT BAR -->
+<div class="region-bar" id="regionBar">
+  <div class="rb-left">
+    <span class="rb-flag" id="rbFlag">🌐</span>
+    <span>Showing clubs for</span>
+    <span class="rb-name" id="rbName">—</span>
+    <span class="rb-status active" id="rbStatus">Active</span>
+    <span class="rb-clubs-count" id="rbCount"></span>
+  </div>
+  <div class="rb-right">
+    Not your region?
+    <span class="rb-change" onclick="toggleRegionDropdown()">Change region ↓</span>
+  </div>
+</div>
+
+<!-- EXPLAINER -->
+<section class="explainer" id="explainer">
+  <div class="exp-half">
+    <div class="exp-tag">Study Club · Learn</div>
+    <h3>Not a course.<br>A companion.</h3>
+    <p>Micro-skill sessions of 1–3 hours with a local mentor. No big curriculums. Just the exact skill you need, right now, in the context of your region and your work.</p>
+    <div class="exp-example">
+      <div class="ex-label">Example</div>
+      <p>"I need to write better office emails." → <em>One session with a mentor. Learn how to use AI tools to draft, refine and send professional correspondence.</em> Done in 2 hours.</p>
+    </div>
+    <div class="exp-tags">
+      <div class="etag">📚 Study Club</div>
+      <div class="etag">AI tools</div>
+      <div class="etag">Micro-skills</div>
+      <div class="etag">1–3 hrs</div>
+    </div>
+  </div>
+  <div class="exp-half">
+    <div class="exp-tag">Services Club · Hire</div>
+    <h3>Don't have time?<br>We'll do it.</h3>
+    <p>The same tasks — handled by a local expert from our Services Club. No offshore outsourcing. A real person from your region who understands your context, your language, your needs.</p>
+    <div class="exp-example">
+      <div class="ex-label">Example</div>
+      <p>"I need this report formatted and emailed." → <em>Assign it to a verified local expert. It gets done. You focus on what matters.</em></p>
+    </div>
+    <div class="exp-tags">
+      <div class="etag">⚙️ Services Club</div>
+      <div class="etag">Local experts</div>
+      <div class="etag">Verified</div>
+      <div class="etag">Regional</div>
+    </div>
+  </div>
+</section>
+
+<!-- CLUBS -->
+<section class="clubs-sec" id="clubs" style="display:none">
+  <div class="sec-head">
+    <div class="sec-eye" id="clubsEyebrow">Clubs Available in Your Region</div>
+    <h2 class="sec-title">One Platform. Every Need.</h2>
+    <p class="sec-sub">Each club addresses one real pillar of your regional life — connected, flexible, built for daily use.</p>
+  </div>
+  <div class="clubs-inner" id="clubsInner">
+    <div class="club-tabs" id="clubTabs">
+      <div class="skel" style="width:550px;height:68px"></div>
+    </div>
+    <div id="clubPanels"></div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="why" id="why">
+  <div>
+    <div class="sec-eye">Why CoworkClub</div>
+    <h2>Your region's first reachable contact.</h2>
+    <p>Services like Amazon, Swiggy, Zomato, and Uber serve the masses — but <strong>your region has its own appetite, needs, and aspirations</strong> that national platforms cannot address.</p>
+    <p>CoworkClub is not a big offshore platform. It's your <strong>daily companion</strong> — small tasks, real people, local context. Whether you want to learn it yourself or get it done for you, we're the first number you call.</p>
+    <p>With roots in India and expanding into UAE and Qatar, we translate <strong>global standards into regional solutions.</strong></p>
+  </div>
+  <div class="why-grid">
+    <div class="wcard"><div class="wcard-icon">🌍</div><h4>Any Region</h4><p>One platform, deployable in any city, state, or country.</p></div>
+    <div class="wcard"><div class="wcard-icon">⚡</div><h4>Daily Companion</h4><p>Not a one-time service. A habit. Your go-to for small, real needs.</p></div>
+    <div class="wcard"><div class="wcard-icon">📍</div><h4>Hyper-Local</h4><p>Experts and mentors from your own neighbourhood.</p></div>
+    <div class="wcard"><div class="wcard-icon">🔄</div><h4>Learn or Hire</h4><p>Two modes for every task — grow your skills or delegate instantly.</p></div>
+  </div>
+</section>
+
+<!-- MARKETPLACE -->
+<section class="market" id="marketplace">
+  <div>
+    <div class="mkt-eye">Coming Soon · Mobile App</div>
+    <h2 class="mkt-title">CoworkClub Marketplace</h2>
+    <p class="mkt-desc">A hyperlocal ecommerce platform for product and service delivery specific to a route — not just a city. Built for the last-mile reality of regional commerce.</p>
+    <div class="mkt-feats">
+      <div class="mkt-feat">Products delivered within your specific route</div>
+      <div class="mkt-feat">Support local sellers and service providers</div>
+      <div class="mkt-feat">Region-first commerce — not national averages</div>
+      <div class="mkt-feat">Integrated with CoworkClub's Services Club network</div>
+    </div>
+  </div>
+  <div class="mkt-visual">
+    <div style="font-size:3.5rem">📱</div>
+    <div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)">Mobile App</div>
+    <div style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700">CoworkClub Market</div>
+    <div style="font-size:.8rem;color:var(--text2)">Route-specific · Hyperlocal · Regional</div>
+    <div class="dl-badges">
+      <div class="dlb">▶ Google Play</div>
+      <div class="dlb"> App Store</div>
+    </div>
+  </div>
+</section>
+
+<!-- ROUTES -->
+<section class="routes-sec" id="routes">
+  <div class="sec-eye">Hyperlocal Delivery</div>
+  <h2 class="sec-title">Our Delivery Routes</h2>
+  <p class="sec-sub">Select a route to see its coverage, waypoints and schedule a delivery to your doorstep.</p>
+
+  <!-- Route Grid -->
+  <div class="route-grid" id="routeGrid">
+    <div class="skel" style="height:130px"></div>
+    <div class="skel" style="height:130px"></div>
+    <div class="skel" style="height:130px"></div>
+  </div>
+
+  <!-- Route Map Panel (hidden until a route is selected) -->
+  <div class="route-map-panel" id="routeMapPanel" style="display:none">
+    <div class="rmp-header">
+      <div class="rmp-header-left">
+        <button class="rmp-back" onclick="closeRouteMap()">← All Routes</button>
+        <div>
+          <div class="rmp-route-name" id="rmpName">Route Name</div>
+          <div class="rmp-route-sub" id="rmpSub">Loading waypoints…</div>
+        </div>
+      </div>
+      <button class="btn-p" style="font-size:.72rem;padding:.55rem 1.3rem" onclick="openAuthModal()">📦 Book Delivery</button>
+    </div>
+    <div class="rmp-body">
+      <div class="rmp-map-wrap">
+        <div id="rmpMap" style="width:100%;height:100%;min-height:380px"></div>
+        <div class="rmp-map-loading" id="rmpMapLoading">
+          <span style="font-size:2rem">🗺️</span>
+          <div style="font-size:.82rem;color:var(--text2);margin-top:.5rem">Loading map…</div>
+        </div>
+      </div>
+      <div class="rmp-wpts">
+        <div class="rmp-wpts-title">Route Stops</div>
+        <div class="rmp-wpts-list" id="rmpWptList">
+          <div style="color:var(--text3);font-size:.82rem">Loading…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-sec">
+  <h2>Your vision.<br><em>Our platform.</em></h2>
+  <p>Join the movement to transform your region from a consumer hub into a creator hub.</p>
+  <div class="hero-actions">
+    <button class="btn-p">Join CoworkClub Today</button>
+    <button class="btn-o">Talk to Us</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="fbname">Aryaprabha CoworkClub</div>
+      <div class="fbsub">Facilitating Regional Innovation</div>
+      <div class="fbdesc">Transforming regions into creator hubs — one community at a time. Your daily companion for workspace, micro-skills, local expertise, and startup support.</div>
+    </div>
+    <div class="fcol" id="footerClubs"><h5>Our Clubs</h5></div>
+    <div class="fcol">
+      <h5>Connect</h5>
+      <a href="#">www.coworkclub.online</a>
+      <a href="#">India</a><a href="#">UAE</a><a href="#">Qatar</a>
+      <a href="#">Partner with Us</a>
+    </div>
+  </div>
+  <div class="fbottom">
+    <span>© 2025 Aryaprabha CoworkClub. All rights reserved.</span>
+    <span class="furl">www.coworkclub.online</span>
+  </div>
+</footer>
+
+<!-- ══ AUTH MODAL ══ -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeAuthModal()">✕</button>
+    <div class="modal-title">Welcome to CoworkClub</div>
+    <div class="modal-tabs">
+      <button class="modal-tab on" id="tabSignin" onclick="switchAuthTab('signin')">Sign In</button>
+      <button class="modal-tab" id="tabSignup" onclick="switchAuthTab('signup')">Sign Up</button>
+    </div>
+
+    <!-- Sign In -->
+    <div id="formSignin">
+      <div class="modal-form">
+        <input type="email" id="siEmail" placeholder="Email address" autocomplete="email"/>
+        <input type="password" id="siPass" placeholder="Password" autocomplete="current-password"/>
+        <button class="modal-btn" id="siBtn" onclick="doSignIn()">Sign In</button>
+        <div class="modal-msg" id="siMsg"></div>
+      </div>
+    </div>
+
+    <!-- Sign Up -->
+    <div id="formSignup" style="display:none">
+      <div class="modal-form">
+        <input type="text" id="suName" placeholder="Full name" autocomplete="name"/>
+        <input type="email" id="suEmail" placeholder="Email address" autocomplete="email"/>
+        <input type="password" id="suPass" placeholder="Password (min 6 chars)" autocomplete="new-password"/>
+        <button class="modal-btn" id="suBtn" onclick="doSignUp()">Create Account</button>
+        <div class="modal-msg" id="suMsg"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ADD PRODUCT MODAL ══ -->
+<div class="modal-overlay" id="addProdModal">
+  <div class="modal-box prod-modal-box">
+    <button class="modal-close" onclick="closeAddProduct()">✕</button>
+    <div class="modal-title">Add Community Product</div>
+    <div class="modal-form">
+      <label>Club / Category</label>
+      <input type="text" id="apCategory" readonly style="opacity:.6"/>
+      <label>Product / Community Name</label>
+      <input type="text" id="apName" placeholder="e.g. Morning Networking Circle"/>
+      <label>Description</label>
+      <textarea id="apDesc" placeholder="Describe this community — what it is, who it's for, what members get..." style="min-height:140px"></textarea>
+      <button class="modal-btn" id="apBtn" onclick="doAddProduct()">Create Community</button>
+      <div class="modal-msg" id="apMsg"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+// ══════════════════════════════════════════════
+//  CONFIG — Supabase JS Client
+// ══════════════════════════════════════════════
+const SB_URL  = 'https://czacuvklmuzvtzkvazhc.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6YWN1dmtsbXV6dnR6a3ZhemhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4OTkzOTMsImV4cCI6MjA4OTQ3NTM5M30.PheGFbsV1gTbih7zZmXuFgFQFtnEfIDKwxyE_eqYSnM';
+
+const _db = window.supabase.createClient(SB_URL, SB_ANON);
+
+// Unified query helper using Supabase JS client
+async function sb(table, params='') {
+  let q = _db.from(table).select('*');
+  params.split('&').filter(Boolean).forEach(p => {
+    const eqIdx = p.indexOf('=');
+    if(eqIdx === -1) return;
+    const key = p.slice(0, eqIdx);
+    const val = p.slice(eqIdx + 1);
+    if(key === 'order') {
+      q = q.order(val, {ascending: true});
+    } else if(key === 'select') {
+      // already select(*)
+    } else if(val.startsWith('eq.')) {
+      const v = val.slice(3);
+      q = q.eq(key, v === 'true' ? true : v === 'false' ? false : v);
+    } else if(val.startsWith('in.(') && val.endsWith(')')) {
+      q = q.in(key, val.slice(4,-1).split(','));
+    } else if(val === 'not.is.null') {
+      q = q.not(key, 'is', null);
+    } else if(val === 'is.null') {
+      q = q.is(key, null);
+    }
+  });
+  const {data, error} = await q;
+  if(error) throw new Error(`${table}: ${error.message}`);
+  return data || [];
+}
+
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+let allRegions    = [];
+let currentRegion = null;
+let currentUser   = null;   // logged-in Supabase user
+let cltActiveCatId = null;  // category_id of active club tab
+const SS = {};
+
+// ══════════════════════════════════════════════
+//  DEBUG BREAKPOINT HELPER
+//  Shows SQL query in msgElId, waits for user
+//  to click Continue before proceeding
+// ══════════════════════════════════════════════
+function debugBreakpoint(msgElId, sql){
+  return new Promise(resolve => {
+    const el = document.getElementById(msgElId);
+    el.className = 'modal-msg';
+    el.innerHTML = `
+      <div style="background:var(--bg3);border:1px solid var(--accent);padding:.75rem;text-align:left;margin-bottom:.5rem">
+        <div style="font-size:.65rem;font-weight:700;color:var(--accent);letter-spacing:.08em;margin-bottom:.4rem">🔍 DEBUG — SQL QUERY</div>
+        <pre style="font-size:.68rem;color:var(--text);white-space:pre-wrap;word-break:break-all;margin:0;line-height:1.6;font-family:monospace">${sql}</pre>
+      </div>
+      <button onclick="document.getElementById('${msgElId}').dataset.go='1'"
+        style="background:var(--accent);color:var(--bg);border:none;padding:.4rem 1.2rem;
+               font-family:'Outfit',sans-serif;font-size:.75rem;font-weight:700;
+               cursor:pointer;letter-spacing:.06em;width:100%">
+        ▶ Continue Execution
+      </button>`;
+    // Poll for button click
+    const check = setInterval(()=>{
+      if(el.dataset.go === '1'){
+        clearInterval(check);
+        delete el.dataset.go;
+        el.innerHTML = '';
+        resolve();
+      }
+    }, 100);
+  });
+}
+
+// ══════════════════════════════════════════════
+//  AUTH — CUSTOM (users table, no Supabase Auth)
+// ══════════════════════════════════════════════
+function updateNavAuth(user){
+  currentUser = user;
+  const btn    = document.getElementById('navAuthBtn');
+  const userEl = document.getElementById('navUser');
+  const nameEl = document.getElementById('navUserName');
+  const addBtn = document.getElementById('addProdBtn');
+  if(user){
+    btn.style.display    = 'none';
+    userEl.style.display = 'flex';
+    nameEl.textContent   = user.name || user.email.split('@')[0];
+    if(addBtn) addBtn.style.display = 'inline-block';
+  } else {
+    btn.style.display    = 'inline-block';
+    userEl.style.display = 'none';
+    if(addBtn) addBtn.style.display = 'none';
+  }
+}
+
+function openAuthModal(){ document.getElementById('authModal').classList.add('open') }
+function closeAuthModal(){ document.getElementById('authModal').classList.remove('open') }
+
+function switchAuthTab(tab){
+  document.getElementById('formSignin').style.display = tab==='signin'?'':'none';
+  document.getElementById('formSignup').style.display = tab==='signup'?'':'none';
+  document.getElementById('tabSignin').classList.toggle('on', tab==='signin');
+  document.getElementById('tabSignup').classList.toggle('on', tab==='signup');
+  document.getElementById('siMsg').textContent = '';
+  document.getElementById('suMsg').textContent = '';
+}
+
+// ── Sign In — SELECT from users table ────────
+async function doSignIn(){
+  const btn   = document.getElementById('siBtn');
+  const msg   = document.getElementById('siMsg');
+  const email = document.getElementById('siEmail').value.trim();
+  const pass  = document.getElementById('siPass').value;
+  if(!email||!pass){ msg.textContent='Please fill in all fields'; msg.className='modal-msg err'; return; }
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  try {
+    const { data, error } = await _db
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .eq('password', pass)
+      .limit(1);
+    if(error) throw error;
+    if(!data || !data.length){
+      msg.textContent = 'Invalid email or password'; msg.className='modal-msg err';
+      btn.disabled = false; btn.textContent = 'Sign In'; return;
+    }
+    const user = data[0];
+    localStorage.setItem('cwc_user', JSON.stringify(user));
+    updateNavAuth(user);
+    msg.textContent = `✓ Welcome back, ${user.name}!`; msg.className='modal-msg ok';
+    btn.disabled = false; btn.textContent = 'Sign In';
+    setTimeout(closeAuthModal, 800);
+  } catch(e){
+    msg.textContent = e.message; msg.className='modal-msg err';
+    btn.disabled = false; btn.textContent = 'Sign In';
+  }
+}
+
+// ── Sign Up — INSERT into users table ────────
+async function doSignUp(){
+  const btn   = document.getElementById('suBtn');
+  const msg   = document.getElementById('suMsg');
+  const name  = document.getElementById('suName').value.trim();
+  const email = document.getElementById('suEmail').value.trim();
+  const pass  = document.getElementById('suPass').value;
+  if(!name||!email||!pass){ msg.textContent='Please fill in all fields'; msg.className='modal-msg err'; return; }
+  if(pass.length < 6){ msg.textContent='Password must be at least 6 characters'; msg.className='modal-msg err'; return; }
+  btn.disabled = true; btn.textContent = 'Creating account…';
+  try {
+    // Check if email already exists
+    const { data: existing } = await _db.from('users').select('user_id').eq('email', email).limit(1);
+    if(existing && existing.length){
+      msg.textContent = 'Email already registered. Please sign in.'; msg.className='modal-msg err';
+      btn.disabled = false; btn.textContent = 'Create Account'; return;
+    }
+    // INSERT INTO users (club_id, email, password, name, role)
+    const { data, error } = await _db.from('users').insert({
+      club_id:  currentRegion?.club_id || null,
+      email:    email,
+      password: pass,
+      name:     name,
+      role:     'member'
+    }).select().single();
+    if(error) throw error;
+    localStorage.setItem('cwc_user', JSON.stringify(data));
+    updateNavAuth(data);
+    msg.textContent = `✓ Welcome, ${data.name}! Account created.`; msg.className='modal-msg ok';
+    btn.disabled = false; btn.textContent = 'Create Account';
+    setTimeout(closeAuthModal, 1000);
+  } catch(e){
+    msg.textContent = e.message; msg.className='modal-msg err';
+    btn.disabled = false; btn.textContent = 'Create Account';
+  }
+}
+
+// ── Sign Out ──────────────────────────────────
+function signOut(){
+  localStorage.removeItem('cwc_user');
+  updateNavAuth(null);
+}
+
+// ── Restore session from localStorage ─────────
+const _savedUser = localStorage.getItem('cwc_user');
+if(_savedUser){ try{ updateNavAuth(JSON.parse(_savedUser)); }catch(e){ localStorage.removeItem('cwc_user'); } }
+
+// ══════════════════════════════════════════════
+//  ENROLL HANDLER — requires login
+// ══════════════════════════════════════════════
+async function handleEnroll(productId, type, clubName, btn){
+  if(!currentUser){ openAuthModal(); return; }
+  if(type === 'buy'){
+    alert('🛒 Purchase flow coming soon!\n\n' + clubName);
+    return;
+  }
+  btn.disabled = true; btn.textContent = 'Joining…';
+  try {
+    const { error } = await _db.from('product_users').insert({
+      product_id: productId,
+      user_id:    currentUser.user_id
+    });
+    if(error) throw error;
+    btn.textContent   = '✓ Joined!';
+    btn.style.opacity = '.6';
+    btn.disabled      = true;
+  } catch(e){
+    btn.disabled     = false;
+    btn.textContent  = '🤝 Join Community';
+    alert('Error: ' + e.message);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  ADD PRODUCT MODAL
+// ══════════════════════════════════════════════
+function openAddProduct(){
+  if(!currentUser){ openAuthModal(); return; }
+  const catRow = cltClubs.find(c => c.slug === cltActiveSlug);
+  document.getElementById('apCategory').value  = catRow ? catRow.category_name : (cltActiveSlug || '');
+  document.getElementById('apName').value      = '';
+  document.getElementById('apDesc').value      = '';
+  document.getElementById('apMsg').textContent = '';
+  document.getElementById('addProdModal').classList.add('open');
+}
+function closeAddProduct(){ document.getElementById('addProdModal').classList.remove('open') }
+
+async function doAddProduct(){
+  if(!currentUser){ openAuthModal(); return; }
+  const btn  = document.getElementById('apBtn');
+  const msg  = document.getElementById('apMsg');
+  const name = document.getElementById('apName').value.trim();
+  const desc = document.getElementById('apDesc').value.trim();
+
+  if(!name){ msg.textContent='Community name is required'; msg.className='modal-msg err'; return; }
+
+  const catRow = cltClubs.find(c => c.slug === cltActiveSlug);
+  if(!catRow){ msg.textContent='No active club selected'; msg.className='modal-msg err'; return; }
+
+  btn.disabled = true; btn.textContent = 'Creating…';
+  try {
+    // INSERT INTO products — service_type='E' hardcoded (community enrollment)
+    const { data: prod, error: prodErr } = await _db.from('products').insert({
+      product_name:  name,
+      description:   desc,
+      service_type:  'E',
+      category_id:   catRow.category_id,
+      club_id:       currentRegion.club_id,
+      created_by:    currentUser.user_id
+    }).select().single();
+
+    if(prodErr) throw prodErr;
+
+    // INSERT INTO product_users — creator is admin
+    const { error: puErr } = await _db.from('product_users').insert({
+      product_id: prod.product_id || prod.id,
+      user_id:    currentUser.user_id,
+      is_admin:   true
+    });
+    if(puErr) console.warn('product_users:', puErr.message);
+
+    msg.textContent = '✓ Community created!'; msg.className='modal-msg ok';
+    btn.disabled = false; btn.textContent = 'Create Community';
+    setTimeout(()=>{ closeAddProduct(); cltOpenProducts(cltActiveSlug); }, 900);
+
+  } catch(e){
+    msg.textContent = 'Error: ' + e.message; msg.className='modal-msg err';
+    btn.disabled = false; btn.textContent = 'Create Community';
+  }
+}
+
+// ══════════════════════════════════════════════
+//  PROGRESS BAR
+// ══════════════════════════════════════════════
+function setP(p){
+  const b = document.getElementById('lbar');
+  b.style.width = p+'%';
+  if(p>=100) setTimeout(()=>{ b.style.opacity='0'; },400);
+  else b.style.opacity='1';
+}
+
+// ══════════════════════════════════════════════
+//  THEME
+// ══════════════════════════════════════════════
+function setTheme(t,btn){
+  document.body.setAttribute('data-theme',t);
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+// ══════════════════════════════════════════════
+//  REGION DROPDOWN
+// ══════════════════════════════════════════════
+function toggleRegionDropdown(){
+  const btn = document.getElementById('regionBtn');
+  const dd  = document.getElementById('regionDropdown');
+  const open = dd.classList.toggle('open');
+  btn.classList.toggle('open', open);
+  if(open){
+    // close on outside click
+    setTimeout(()=>{
+      document.addEventListener('click', closeDropdownOutside, {once:true});
+    },10);
+  }
+}
+function closeDropdownOutside(e){
+  const sel = document.getElementById('regionSelector');
+  if(!sel.contains(e.target)){
+    document.getElementById('regionDropdown').classList.remove('open');
+    document.getElementById('regionBtn').classList.remove('open');
+  }
+}
+
+function buildRegionDropdown(regions){
+  const dd = document.getElementById('regionDropdown');
+  const notice = `<div class="ip-notice">Clubs shown vary by region · IP detection coming soon</div>`;
+  dd.innerHTML = regions.map(r => `
+    <div class="region-option ${r.club_id===currentRegion?.club_id?'active':''}"
+         onclick="selectRegion('${r.club_id}')">
+      <span class="ro-flag">${r.flag_emoji||'🌐'}</span>
+      <div class="ro-info">
+        <div class="ro-name">${r.club_name}</div>
+        <div class="ro-status ${r.status}">${r.status==='active'?'Active':r.status==='launching'?'Launching':'Upcoming'}</div>
+      </div>
+      <span class="ro-check">✓</span>
+    </div>`).join('') + notice;
+}
+
+function selectRegion(clubId){
+  const region = allRegions.find(r => r.club_id === clubId);
+  if(!region || region.club_id === currentRegion?.club_id) {
+    document.getElementById('regionDropdown').classList.remove('open');
+    document.getElementById('regionBtn').classList.remove('open');
+    return;
+  }
+  currentRegion = region;
+  document.getElementById('regionDropdown').classList.remove('open');
+  document.getElementById('regionBtn').classList.remove('open');
+  updateRegionUI();
+  loadClubsForRegion(clubId);
+  // Reload routes for new region
+  closeRouteMap();
+  loadRoutes();
+  // highlight in regions section
+  document.querySelectorAll('.rcard').forEach(c=>{
+    c.classList.toggle('current', c.dataset.clubId === clubId);
+  });
+}
+
+function updateRegionUI(){
+  if(!currentRegion) return;
+  // nav button
+  document.getElementById('btnFlag').textContent = currentRegion.flag_emoji||'🌐';
+  document.getElementById('btnName').textContent  = currentRegion.club_name;
+  // region bar
+  document.getElementById('rbFlag').textContent   = currentRegion.flag_emoji||'🌐';
+  document.getElementById('rbName').textContent   = currentRegion.club_name;
+  document.getElementById('rbStatus').textContent = currentRegion.status==='active'?'Active':currentRegion.status==='launching'?'Launching':'Upcoming';
+  document.getElementById('rbStatus').className   = `rb-status ${currentRegion.status}`;
+  // rebuild dropdown active state
+  buildRegionDropdown(allRegions);
+  // region cards highlight
+  document.querySelectorAll('.rcard').forEach(c=>{
+    c.classList.toggle('current', c.dataset.clubId === currentRegion.club_id);
+  });
+}
+
+// ══════════════════════════════════════════════
+//  LOAD CLUBS FOR A REGION
+// ══════════════════════════════════════════════
+async function loadClubsForRegion(clubId){
+  // animate out
+  const inner = document.getElementById('clubsInner');
+  if(inner) inner.classList.add('switching');
+
+  // fetch categories for THIS region only
+  // Step 1: fetch categories for THIS region only
+  const categories = await sb('product_categories',
+    `club_id=eq.${clubId}&is_predefined=eq.true&order=sort_order`);
+
+  // Step 2: get only the category_ids for this region
+  const catIds = categories.map(c => c.category_id);
+
+  // Step 3: fetch slides + features filtered to these category_ids only
+  // Using Supabase JS client directly for 'in' filter on fetched ids
+  const [slidesRes, featuresRes] = await Promise.all([
+    _db.from('product_category_images')
+       .select('*')
+       .in('category_id', catIds)
+       .eq('is_active', true)
+       .order('sort_order'),
+    _db.from('category_features')
+       .select('*')
+       .in('category_id', catIds)
+       .order('sort_order')
+  ]);
+
+  const slides   = slidesRes.data   || [];
+  const features = featuresRes.data || [];
+
+  // group slides + features by category_id
+  const slidesMap={}, featuresMap={};
+  slides.forEach(s=>{ if(!slidesMap[s.category_id]) slidesMap[s.category_id]=[]; slidesMap[s.category_id].push(s); });
+  features.forEach(f=>{ if(!featuresMap[f.category_id]) featuresMap[f.category_id]=[]; featuresMap[f.category_id].push(f); });
+
+  // update clubs count in bar
+  document.getElementById('rbCount').textContent = `· ${categories.length} club${categories.length!==1?'s':''} available`;
+  const _ey=document.getElementById('clubsEyebrow'); if(_ey) _ey.textContent = `Clubs Available in ${currentRegion?.club_name||'Your Region'}`;
+
+  // animate in
+  setTimeout(()=>{
+    renderClubs(categories, slidesMap, featuresMap);
+    if(inner) inner.classList.remove('switching');
+    // populate club landing section
+    cltClubs    = categories;
+    cltSlideMap = slidesMap;
+    initClubLanding();
+  }, 250);
+}
+
+// ══════════════════════════════════════════════
+//  CLUB LANDING — state
+// ══════════════════════════════════════════════
+let cltClubs      = [];   // categories for current region
+let cltSlideMap   = {};   // category_id → slides[]
+let cltActiveSlug = null; // currently selected club slug
+let cltCur        = 0;    // current slide index
+let cltTotal      = 1;    // total slides
+let cltTimer      = null; // auto-advance timer
+
+const CLT_CLUBS_STATIC = [
+  { slug:'meetup',   name:'Meetup Club',   icon:'🤝', pitch:'Community events, networking & local meetups', color:'#c9a84c' },
+  { slug:'infra',    name:'Infra Club',    icon:'🏢', pitch:'Hot desks, private cabins & meeting rooms',   color:'#4c9ac9' },
+  { slug:'study',    name:'Study Club',    icon:'📚', pitch:'Micro-skill sessions with local mentors',     color:'#4cc9a8' },
+  { slug:'services', name:'Services Club', icon:'⚙️', pitch:'Get things done by verified local experts',  color:'#c94c4c' },
+  { slug:'startup',  name:'Startup Club',  icon:'🚀', pitch:'Launchpad for regional founders & ideas',    color:'#9a4cc9' },
+];
+
+// Default slides per club (concept placeholders — replace with DB slides when available)
+const CLT_DEFAULT_SLIDES = {
+  meetup:[
+    {title:'Community First',       sub:'Connect with driven people in your region', emoji:'🤝', grad:'linear-gradient(135deg,#1a2e20,#0d2b1a)'},
+    {title:'Monthly Meetups',       sub:'Real conversations. Real connections.',      emoji:'🎤', grad:'linear-gradient(135deg,#2e1a0d,#1a0d0d)'},
+  ],
+  infra:[
+    {title:'Your Workspace Awaits', sub:'Hot desks, cabins & meeting rooms on demand', emoji:'🏢', grad:'linear-gradient(135deg,#0d1b2e,#1a2e47)'},
+    {title:'Book by the Hour',      sub:'Flexible, affordable, professional',          emoji:'⏱️', grad:'linear-gradient(135deg,#1a1b2e,#0d0d1b)'},
+  ],
+  study:[
+    {title:'Learn in 2 Hours',      sub:'Micro-skill sessions with a local mentor',   emoji:'📚', grad:'linear-gradient(135deg,#1a2e1a,#0d1b0d)'},
+    {title:'AI & Digital Skills',   sub:'Stay relevant. Upskill at your own pace.',   emoji:'🤖', grad:'linear-gradient(135deg,#2e2a0d,#1b1a0d)'},
+  ],
+  services:[
+    {title:'Get It Done For You',   sub:'Assign tasks to verified local experts',     emoji:'⚙️', grad:'linear-gradient(135deg,#2e0d0d,#1b0d0d)'},
+    {title:'Local. Fast. Reliable.',sub:'No offshore. Real people. Your region.',      emoji:'🙌', grad:'linear-gradient(135deg,#1a0d2e,#0d0d1b)'},
+  ],
+  startup:[
+    {title:'Launch Here',           sub:'Mentorship, co-founders & funding support',  emoji:'🚀', grad:'linear-gradient(135deg,#1a0d2e,#2e1a0d)'},
+    {title:'Regional Innovation',   sub:'Build something that matters locally first',  emoji:'💡', grad:'linear-gradient(135deg,#0d1b2e,#2e0d1b)'},
+  ],
+};
+
+// ── Slider helpers ──────────────────────────────
+function cltSlideTo(i){
+  const slidesEl = document.getElementById('cltSlides');
+  cltCur = (i + cltTotal) % cltTotal;
+  slidesEl.style.transform = `translateX(-${cltCur*100}%)`;
+  document.querySelectorAll('.clt-dot').forEach((d,j)=>d.classList.toggle('on', j===cltCur));
+}
+function cltSlideMove(dir){ cltSlideTo(cltCur + dir); }
+function cltStartAuto(){
+  if(cltTimer) clearInterval(cltTimer);
+  if(cltTotal > 1) cltTimer = setInterval(()=>cltSlideMove(1), 4000);
+}
+
+// ── Build slider for a given club slug ──────────
+function cltBuildSlider(slug){
+  cltCur = 0;
+  const slidesEl = document.getElementById('cltSlides');
+  const navEl    = document.getElementById('cltSlideNav');
+
+  // Get slides from DB map or fallback to static
+  const cat  = cltClubs.find(c=>(c.slug||c.category_name.toLowerCase().replace(/\s+club/i,'').trim())===slug);
+  const dbSlides = cat ? (cltSlideMap[cat.category_id]||[]) : [];
+
+  let html = '';
+  if(dbSlides.length){
+    html = dbSlides.map(s=>{
+      const bg = s.image_url
+        ? `background-image:url(${s.image_url});background-size:cover;background-position:center`
+        : (s.bg_gradient ? `background:${s.bg_gradient}` : 'background:linear-gradient(135deg,#1a2e47,#0d1b2a)');
+      return `<div class="clt-slide">
+        <div class="clt-slide-bg" style="${bg}"></div>
+        <div class="clt-slide-overlay"></div>
+        <div class="clt-slide-content">
+          <div class="clt-slide-club">${cat.icon_emoji||''} ${cat.category_name}</div>
+          <div class="clt-slide-title">${s.title||cat.category_name}</div>
+          <div class="clt-slide-sub">${s.subtitle||''}</div>
+        </div>
+      </div>`;
+    }).join('');
+    cltTotal = dbSlides.length;
+  } else {
+    const statics = CLT_DEFAULT_SLIDES[slug] || [{title:'Welcome',sub:'',emoji:'●',grad:'linear-gradient(135deg,#1a2e47,#0d1b2a)'}];
+    html = statics.map(s=>`<div class="clt-slide">
+      <div class="clt-slide-bg" style="background:${s.grad};display:flex;align-items:center;justify-content:center">
+        <span style="font-size:5rem;opacity:.25">${s.emoji}</span>
+      </div>
+      <div class="clt-slide-overlay"></div>
+      <div class="clt-slide-content">
+        <div class="clt-slide-club">${CLT_CLUBS_STATIC.find(c=>c.slug===slug)?.icon||''} ${CLT_CLUBS_STATIC.find(c=>c.slug===slug)?.name||slug}</div>
+        <div class="clt-slide-title">${s.title}</div>
+        <div class="clt-slide-sub">${s.sub}</div>
+      </div>
+    </div>`).join('');
+    cltTotal = statics.length;
+  }
+
+  slidesEl.innerHTML = html;
+  slidesEl.style.transform = 'translateX(0)';
+
+  // Dots + arrows
+  const dots = Array.from({length:cltTotal},(_,i)=>`<div class="clt-dot${i===0?' on':''}" onclick="cltSlideTo(${i})"></div>`).join('');
+  navEl.innerHTML = `
+    <div class="clt-arrow" onclick="cltSlideMove(-1)">←</div>
+    ${dots}
+    <div class="clt-arrow" onclick="cltSlideMove(1)">→</div>`;
+
+  cltStartAuto();
+}
+
+// cltBuildMarketingCards — removed (no longer used)
+function cltBuildMarketingCards(){}
+
+// ── Build club tabs — always show all 5, disable unavailable ones ──
+function cltBuildTabs(){
+  const el = document.getElementById('cltTabs');
+  // Active slugs for this region
+  const activeSlugs = cltClubs.map(c => c.slug || c.category_name.toLowerCase().replace(/\s+club/i,'').trim());
+  const firstActive = activeSlugs[0] || CLT_CLUBS_STATIC[0].slug;
+
+  el.innerHTML = CLT_CLUBS_STATIC.map(c => {
+    const isActive = activeSlugs.includes(c.slug);
+    const isFirst  = c.slug === firstActive;
+    return `<button class="clt-tab${isFirst?' on':''}"
+      data-slug="${c.slug}"
+      ${isActive ? `onclick="cltSelectClub('${c.slug}',this)"` : 'disabled title="Not available in this region"'}
+      style="${!isActive?'opacity:.35;cursor:not-allowed;':''}"
+    ><span class="clt-tab-icon">${c.icon}</span><span class="clt-tab-label">${c.name}</span></button>`;
+  }).join('');
+}
+
+// ── Select a club tab ───────────────────────────
+function cltSelectClub(slug, triggerEl){
+  cltActiveSlug = slug;
+  document.querySelectorAll('.clt-tab').forEach(t=>t.classList.toggle('on', t.dataset.slug===slug));
+  cltBuildSlider(slug);
+  cltOpenProducts(slug);
+}
+
+// ── Open product listing for a club ────────────
+async function cltOpenProducts(slug){
+  document.getElementById('prodListing').classList.add('on');
+
+  cltActiveSlug = slug;
+  document.querySelectorAll('.clt-tab').forEach(t=>t.classList.toggle('on', t.dataset.slug===slug));
+  cltBuildSlider(slug);
+
+  const staticClub = CLT_CLUBS_STATIC.find(c=>c.slug===slug);
+  document.getElementById('prodIcon').textContent  = staticClub?.icon || '●';
+  document.getElementById('prodTitle').textContent = staticClub?.name || slug;
+  document.getElementById('prodSub').textContent   = 'Loading…';
+  document.getElementById('prodGrid').innerHTML    = '<div class="prod-loading">Fetching products…</div>';
+
+  try {
+    const regionClubId = currentRegion.club_id;
+
+    // Step 1: get category_id from product_categories WHERE slug = clicked slug
+    // cltClubs already loaded for this region via loadClubsForRegion
+    // Find the matching category by slug — correct club_id already filtered at load time
+    const catRow = cltClubs.find(c => c.slug === slug);
+
+    if(!catRow){
+      document.getElementById('prodGrid').innerHTML =
+        `<div class="prod-loading">⚠️ No category for slug: <strong>${slug}</strong><br>
+         <small>Available: ${cltClubs.map(c=>c.slug).join(', ')}</small></div>`;
+      return;
+    }
+
+    // Track active category for Add Product
+    cltActiveCatId = catRow.category_id;
+    document.getElementById('prodIcon').textContent  = catRow.icon_emoji || staticClub?.icon || '●';
+    document.getElementById('prodTitle').textContent = catRow.category_name;
+    document.getElementById('prodSub').textContent   = catRow.tagline || catRow.description || '';
+
+    // Fetch products filtered by service_type if filter is set
+    let q = _db.from('products')
+      .select('product_id, product_name, service_type, uom, price, description')
+      .eq('club_id',     regionClubId)
+      .eq('category_id', catRow.category_id);
+    if(prodFilter !== 'all') q = q.eq('service_type', prodFilter);
+    const { data: prods, error: prodErr } = await q;
+
+    if(prodErr) throw prodErr;
+
+    if(!prods || !prods.length){
+      document.getElementById('prodGrid').innerHTML =
+        `<div class="prod-loading">⚠️ No products found.<br>
+         <small>slug: ${slug} | category_id: ${catRow.category_id} | club_id: ${regionClubId}</small></div>`;
+      return;
+    }
+
+    document.getElementById('prodGrid').innerHTML = prods.map(p => {
+      const svc  = p.service_type || '';
+      const isCommunity = svc === 'E';
+      const isBuy       = svc === 'S' || svc === 'B';
+      const pid  = p.product_id || '';
+      const btnClass = isCommunity ? 'prod-enroll free-btn' : 'prod-enroll paid';
+      const btnLabel = isCommunity ? '🤝 Join Community'
+                     : isBuy       ? '🛒 Buy / Book'
+                     :               'Enroll';
+      const btnAction = isCommunity
+        ? `onclick="handleEnroll('${pid}','join','${catRow.category_name}',this)"`
+        : `onclick="handleEnroll('${pid}','buy','${catRow.category_name}',this)"`;
+      const svcBadge = isCommunity
+        ? `<div class="prod-badge" style="color:var(--accent);border-color:var(--accent)">Community</div>`
+        : isBuy ? `<div class="prod-badge">Purchase</div>` : '';
+      return `
+      <div class="prod-card">
+        <div class="prod-card-tag">${catRow.icon_emoji||''} ${catRow.category_name}</div>
+        <div class="prod-card-name">${p.product_name||'Product'}</div>
+        <div class="prod-card-desc">${p.description||''}</div>
+        ${svcBadge ? `<div class="prod-card-badges">${svcBadge}</div>` : ''}
+        <div class="prod-card-footer">
+          <div class="prod-card-price free">${isCommunity ? 'Free' : p.price ? '₹'+Number(p.price).toLocaleString('en-IN') : 'Free'}</div>
+          <button class="${btnClass}" ${btnAction} ${isBuy?'title="Payment flow coming soon"':''}>${btnLabel}</button>
+        </div>
+      </div>`;
+    }).join('');
+
+  } catch(e){
+    console.error('Product load error:', e);
+    document.getElementById('prodGrid').innerHTML =
+      `<div class="prod-loading">❌ Error: ${e.message||e}</div>`;
+  }
+}
+
+// ── Product filter state ──────────────────────
+let prodFilter = 'E'; // default show community (E) only
+
+function setFilter(f){
+  prodFilter = f;
+  document.getElementById('filterE').style.background   = f==='E'   ? 'var(--accent)' : 'var(--bg3)';
+  document.getElementById('filterE').style.color        = f==='E'   ? 'var(--bg)'     : 'var(--text2)';
+  document.getElementById('filterAll').style.background = f==='all' ? 'var(--accent)' : 'var(--bg3)';
+  document.getElementById('filterAll').style.color      = f==='all' ? 'var(--bg)'     : 'var(--text2)';
+  if(cltActiveSlug) cltOpenProducts(cltActiveSlug);
+}
+// handleEnroll defined above
+
+// ── Back to marketing overview ──────────────────
+function showMarketingView(){
+  document.getElementById('prodListing').classList.remove('on');
+  document.querySelectorAll('.clt-tab').forEach(t=>t.classList.remove('on'));
+  const firstSlug = cltClubs.length
+    ? (cltClubs[0].slug||cltClubs[0].category_name.toLowerCase().replace(/\s+club/i,'').trim())
+    : CLT_CLUBS_STATIC[0].slug;
+  cltBuildSlider(firstSlug);
+  document.querySelectorAll('.clt-tab')[0]?.classList.add('on');
+}
+
+// ── Init the club landing section ───────────────
+function initClubLanding(){
+  cltActiveSlug = null;
+  cltBuildTabs();
+
+  // Default: select first active club, build slider and load its products
+  const firstSlug = cltClubs.length
+    ? (cltClubs[0].slug||cltClubs[0].category_name.toLowerCase().replace(/\s+club/i,'').trim())
+    : CLT_CLUBS_STATIC[0].slug;
+  cltActiveSlug = firstSlug;
+  cltBuildSlider(firstSlug);
+  cltOpenProducts(firstSlug);
+}
+
+// ══════════════════════════════════════════════
+function renderClubs(categories, slidesMap, featuresMap){
+  const tabsEl   = document.getElementById('clubTabs');
+  const panelsEl = document.getElementById('clubPanels');
+  const footerEl = document.getElementById('footerClubs');
+
+  tabsEl.innerHTML = panelsEl.innerHTML = '';
+  footerEl.innerHTML = '<h5>Our Clubs</h5>' +
+    categories.map(c=>`<a href="#">${c.icon_emoji||''} ${c.category_name} — ${c.one_word||''}</a>`).join('');
+
+  // strip — club names below marketing cards
+  const stripEl = document.getElementById('strip');
+  if(stripEl) stripEl.innerHTML = categories.map(c=>`<div class="strip-item">${c.icon_emoji||'◆'} ${c.category_name}</div>`).join('') + `<div class="strip-item">◆ Facilitating Regional Innovation</div>`;
+
+  const ctaMap = {
+    meetup:  ['View Schedule','Learn More'],
+    infra:   ['Book a Desk','View Spaces'],
+    study:   ['Find a Mentor','Browse Skills'],
+    services:['Find an Expert','List Your Skills'],
+    startup: ['Apply Now','Learn More']
+  };
+
+  categories.forEach((cat,idx)=>{
+    const isFirst = idx===0;
+    const slug    = cat.slug || cat.category_name.toLowerCase().replace(/\s+club/,'').trim();
+    const slides  = slidesMap[cat.category_id]  || [];
+    const feats   = featuresMap[cat.category_id] || [];
+
+    // TAB
+    const tab = document.createElement('button');
+    tab.className = 'ctab'+(isFirst?' on':'');
+    tab.innerHTML = `
+      <div class="ctab-icon">${cat.icon_emoji||'●'}</div>
+      <div class="ctab-word">${cat.one_word||''}</div>
+      <div class="ctab-name">${cat.category_name.replace(/\s*Club/i,'')}</div>`;
+    tab.onclick = ()=> switchClub(slug, tab);
+    tabsEl.appendChild(tab);
+
+    // SLIDER STATE
+    SS[slug] = {cur:0, tot:Math.max(slides.length,1)};
+
+    const slidesHTML = slides.length
+      ? slides.map(s=>{
+          const bgStyle = s.image_url
+            ? `background-image:url(${s.image_url});background-size:cover;background-position:center`
+            : (s.bg_gradient ? `background:${s.bg_gradient}` : 'background:linear-gradient(135deg,#1a2e47,#0d1b2a)');
+          return `
+          <div class="slide">
+            <div class="slide-bg" style="${bgStyle};display:flex;align-items:center;justify-content:center">
+              ${!s.image_url?`<span style="font-size:4rem">${s.bg_emoji||cat.icon_emoji||'●'}</span>`:''}
+            </div>
+            <div class="scap"><h4>${s.title||cat.category_name}</h4><p>${s.subtitle||''}</p></div>
+          </div>`;}).join('')
+      : `<div class="slide"><div class="slide-bg" style="background:linear-gradient(135deg,#1a2e47,#0d1b2a);display:flex;align-items:center;justify-content:center"><span style="font-size:4rem">${cat.icon_emoji||'●'}</span></div><div class="scap"><h4>${cat.category_name}</h4><p>${cat.tagline||''}</p></div></div>`;
+
+    const dotsHTML = slides.map((_,i)=>
+      `<div class="dot ${i===0?'on':''}" onclick="slideTo('${slug}',${i})"></div>`).join('');
+
+    const featsHTML = feats.map(f=>`
+      <div class="cfeat">
+        <div class="fi">${f.icon_emoji||'•'}</div>
+        <div class="ft"><strong>${f.title}</strong><span>${f.description||''}</span></div>
+      </div>`).join('');
+
+    const [cta1,cta2] = ctaMap[slug]||['Get Started','Learn More'];
+
+    // PANEL
+    const panel = document.createElement('div');
+    panel.className = 'cpanel'+(isFirst?' on':'');
+    panel.id = 'panel-'+slug;
+    panel.innerHTML = `
+      <div>
+        <div class="strack"><div class="sslides" id="ss-${slug}">${slidesHTML}</div></div>
+        <div class="sctrl">
+          <button class="sbtn" onclick="slideMove('${slug}',-1)">←</button>
+          <div class="sdots" id="dots-${slug}">${dotsHTML}</div>
+          <button class="sbtn" onclick="slideMove('${slug}',1)">→</button>
+        </div>
+      </div>
+      <div class="cinfo">
+        <div class="cinfo-badge">${cat.icon_emoji||''} ${cat.category_name}</div>
+        <h3>${cat.one_word||cat.category_name}.</h3>
+        <div class="cinfo-tagline">${cat.tagline||''}</div>
+        <p class="cinfo-desc">${cat.description||''}</p>
+        <div class="cfeats">${featsHTML}</div>
+        <div class="cbtns">
+          <button class="bsm p">${cta1}</button>
+          <button class="bsm g">${cta2}</button>
+        </div>
+      </div>`;
+    panelsEl.appendChild(panel);
+
+    // auto-advance
+    setInterval(()=>{
+      if(document.getElementById('panel-'+slug)?.classList.contains('on'))
+        slideMove(slug,1);
+    }, 4200);
+  });
+}
+
+function switchClub(id,btn){
+  document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.cpanel').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('panel-'+id)?.classList.add('on');
+}
+
+// ══════════════════════════════════════════════
+//  SLIDERS
+// ══════════════════════════════════════════════
+function slideTo(id,i){
+  if(!SS[id]) return;
+  SS[id].cur = Math.max(0, Math.min(i, SS[id].tot-1));
+  const el = document.getElementById('ss-'+id);
+  if(el) el.style.transform = `translateX(-${SS[id].cur*100}%)`;
+  document.querySelectorAll(`#dots-${id} .dot`).forEach((d,j)=>d.classList.toggle('on',j===SS[id].cur));
+}
+function slideMove(id,dir){
+  if(!SS[id]) return;
+  slideTo(id,(SS[id].cur+dir+SS[id].tot)%SS[id].tot);
+}
+
+// ══════════════════════════════════════════════
+//  RENDER REGIONS section + "Partner" card
+// ══════════════════════════════════════════════
+function renderRegions(regions){
+  const el = document.getElementById('regionCards');
+  const all = [...regions, {
+    club_id:'partner', club_name:'Your Region',
+    flag_emoji:'🌐', status:'upcoming',
+    tagline:'Partner with Us',
+    description:'Interested in bringing CoworkClub to your region? Let\'s build it together.'
+  }];
+  el.innerHTML = all.map(r=>`
+    <div class="rcard ${r.club_id===currentRegion?.club_id?'current':''}"
+         data-club-id="${r.club_id}"
+         onclick="${r.club_id!=='partner'?`selectRegion('${r.club_id}')`:''}" >
+      <div class="rflag">${r.flag_emoji||'🌐'}</div>
+      <div class="rname">${r.club_name}</div>
+      <div class="rstatus ${r.status||'upcoming'}">
+        ${r.status==='active'?'Active':r.status==='launching'?'Launching':r.tagline||'Coming Soon'}
+      </div>
+      <div class="rline"></div>
+      <div class="rdesc">${r.description||r.tagline||''}</div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════
+//  INIT
+//  1. Load all regions
+//  2. Pick default (is_default=true) or first active
+//  3. Load that region's clubs
+//  4. Build region selector dropdown
+//  FUTURE: detect IP → filter regions by country
+// ══════════════════════════════════════════════
+async function init(){
+  setP(15);
+  try {
+    // Load all active+launching regions
+    allRegions = await sb('clubs', 'select=*&status=in.(active,launching)');
+    setP(40);
+
+    if(!allRegions.length) throw new Error('No active regions');
+
+    // Pick default region
+    // PHASE 1: use is_default flag
+    // PHASE 2 (future): detect IP country → filter allRegions by country → pick first match
+    currentRegion = allRegions.find(r=>r.is_default) || allRegions[0];
+
+    // Build region dropdown
+    buildRegionDropdown(allRegions);
+
+    // Update region bar + nav button
+    updateRegionUI();
+
+    // Render regions section
+    renderRegions(allRegions);
+
+    setP(60);
+
+    // Load clubs for default region
+    await loadClubsForRegion(currentRegion.club_id);
+
+    // Load delivery routes for this region
+    await loadRoutes();
+
+    setP(100);
+
+  } catch(err){
+    console.warn('Supabase error:', err);
+    setP(100);
+    // Graceful fallback
+    document.getElementById('clubTabs').innerHTML =
+      `<div style="padding:1rem 2rem;color:var(--text3);font-size:.85rem">
+        ⚠️ Run the migration SQL in Supabase to populate data.
+      </div>`;
+    document.getElementById('regionCards').innerHTML =
+      `<div class="rcard"><div class="rflag">🇮🇳</div><div class="rname">India</div><div class="rstatus active">Active</div><div class="rline"></div></div>
+       <div class="rcard"><div class="rflag">🇦🇪</div><div class="rname">UAE</div><div class="rstatus launching">Launching</div><div class="rline"></div></div>
+       <div class="rcard"><div class="rflag">🌐</div><div class="rname">Your Region</div><div class="rstatus upcoming">Partner with Us</div><div class="rline"></div></div>`;
+    document.getElementById('btnName').textContent = 'Select Region';
+    // Still show static club landing
+    cltClubs = []; cltSlideMap = {};
+    initClubLanding();
+    // Try loading routes anyway
+    loadRoutes();
+  }
+}
+
+init();
+</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ══════════════════════════════════════════════
+//  ROUTES — fetch, render grid, open map
+// ══════════════════════════════════════════════
+let _allRoutes    = [];
+let _leafletMap   = null;
+let _activeRouteId = null;
+
+// Emoji cycle for route cards
+const ROUTE_ICONS = ['🗺️','🛵','🚐','🏘️','🛤️','📍'];
+
+async function loadRoutes(){
+  try {
+    // Filter routes for current region's club_id
+    let q = _db.from('routes').select('*').eq('is_active', true);
+    if(currentRegion?.club_id) q = q.eq('club_id', currentRegion.club_id);
+    const { data, error } = await q.order('route_name');
+    if(error) throw error;
+    _allRoutes = data || [];
+    renderRouteGrid(_allRoutes);
+  } catch(e){
+    document.getElementById('routeGrid').innerHTML =
+      `<div style="grid-column:1/-1;padding:2rem;text-align:center;color:var(--text3);font-size:.85rem">
+        ⚠️ Could not load routes: ${e.message}
+      </div>`;
+  }
+}
+
+function renderRouteGrid(routes){
+  const el = document.getElementById('routeGrid');
+  if(!routes.length){
+    el.innerHTML = `<div style="padding:2.5rem;text-align:center;color:var(--text3);font-size:.85rem;grid-column:1/-1">
+      No active routes in this region yet.
+    </div>`;
+    return;
+  }
+  el.innerHTML = routes.map((r, i) => `
+    <div class="route-card" id="rc-${r.route_id}" onclick="openRouteMap('${r.route_id}')">
+      <div class="rc-icon">${ROUTE_ICONS[i % ROUTE_ICONS.length]}</div>
+      <div class="rc-name">${r.route_name}</div>
+      <div class="rc-desc">${r.description || 'Hyperlocal delivery route'}</div>
+      <div class="rc-meta">
+        <span class="rc-badge">Active</span>
+        <span class="rc-wpt-count" id="wc-${r.route_id}">Loading stops…</span>
+      </div>
+      <div class="rc-arrow">View Map →</div>
+    </div>`).join('');
+
+  // Fetch waypoint counts for each route
+  routes.forEach(async r => {
+    const { count } = await _db.from('route_waypoints')
+      .select('*', { count:'exact', head:true })
+      .eq('route_id', r.route_id);
+    const el = document.getElementById(`wc-${r.route_id}`);
+    if(el) el.textContent = `${count || 0} stop${count !== 1 ? 's' : ''}`;
+  });
+}
+
+async function openRouteMap(routeId){
+  _activeRouteId = routeId;
+  const route = _allRoutes.find(r => r.route_id === routeId);
+  if(!route) return;
+
+  // Highlight selected card
+  document.querySelectorAll('.route-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById(`rc-${routeId}`)?.classList.add('selected');
+
+  // Show panel
+  const panel = document.getElementById('routeMapPanel');
+  panel.style.display = 'block';
+  document.getElementById('rmpName').textContent = route.route_name;
+  document.getElementById('rmpSub').textContent  = route.description || 'Loading waypoints…';
+  document.getElementById('rmpMapLoading').style.display = 'flex';
+  document.getElementById('rmpWptList').innerHTML = '<div style="color:var(--text3);font-size:.82rem">Loading stops…</div>';
+
+  // Scroll to panel
+  setTimeout(() => panel.scrollIntoView({ behavior:'smooth', block:'nearest' }), 100);
+
+  // Fetch waypoints
+  const { data: wpts, error } = await _db
+    .from('route_waypoints')
+    .select('*')
+    .eq('route_id', routeId)
+    .order('sequence');
+
+  if(error || !wpts?.length){
+    document.getElementById('rmpSub').textContent = 'No waypoints defined yet.';
+    document.getElementById('rmpMapLoading').innerHTML =
+      `<span style="font-size:2rem">📍</span>
+       <div style="font-size:.82rem;color:var(--text2);margin-top:.5rem">No waypoints added to this route yet.</div>`;
+    document.getElementById('rmpWptList').innerHTML =
+      `<div style="color:var(--text3);font-size:.78rem">No stops defined.</div>`;
+    return;
+  }
+
+  document.getElementById('rmpSub').textContent = `${wpts.length} stop${wpts.length!==1?'s':''} · Tap a stop to focus`;
+
+  // Render waypoints list
+  document.getElementById('rmpWptList').innerHTML = wpts.map((w, i) => `
+    <div class="rmp-wpt-item" onclick="focusWaypoint(${w.lat},${w.lng},'${w.way_name}')" style="cursor:pointer">
+      <div class="rmp-wpt-num">${w.sequence}</div>
+      <div class="rmp-wpt-info">
+        <div class="rmp-wpt-name">${w.way_name}</div>
+        <div class="rmp-wpt-coord">${Number(w.lat).toFixed(5)}, ${Number(w.lng).toFixed(5)}</div>
+      </div>
+    </div>`).join('');
+
+  // Start realtime driver tracking for this movement
+  // Find any in_progress movement for this route
+  _db.from('route_movements')
+    .select('movement_id')
+    .eq('route_id', routeId)
+    .eq('status', 'in_progress')
+    .limit(1)
+    .then(({ data }) => {
+      if(data?.length) startDriverTracking(data[0].movement_id);
+    });
+
+  // Build / update Leaflet map
+  drawRouteMap(wpts, route.route_name);
+}
+
+// ── OpenRouteService road-snapped routing ──────
+// Segment-by-segment ORS calls → real Kerala road geometry
+// Closed circular route: stop1→2→3…→N→1
+const ORS_KEY = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjM3YTEwYmRjNGU2YTQwYTU4OGZkZjhhNjQwNDcxODVmIiwiaCI6Im11cm11cjY0In0=';
+
+// Route line colours — vivid teal-to-amber gradient faked per-segment
+const SEG_COLORS = [
+  '#00c9b1','#00bfa5','#00b4d8','#0096c7','#0077b6',
+  '#023e8a','#7b2d8b','#c9184a','#e85d04','#f48c06',
+  '#faa307','#ffba08','#c9a84c','#a4ac86','#52796f'
+];
+
+async function drawRouteMap(wpts, routeName){
+
+  const latlngs = wpts.map(w => [parseFloat(w.lat), parseFloat(w.lng)]);
+  const center  = latlngs[0] || [11.8745, 75.3704]; // Kannur fallback
+
+  // ── Init / reset Leaflet map ──────────────────
+  if(_leafletMap){ _leafletMap.remove(); _leafletMap = null; }
+
+  _leafletMap = L.map('rmpMap', {
+    zoomControl: true,
+    scrollWheelZoom: true,
+    attributionControl: true
+  }).setView(center, 14);
+
+  // Carto Voyager — clean, modern, roads clearly visible
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution:'© <a href="https://www.openstreetmap.org/copyright">OSM</a> © <a href="https://carto.com">CARTO</a>',
+    subdomains:'abcd', maxZoom:20
+  }).addTo(_leafletMap);
+
+  // ── Drop numbered stop markers immediately ────
+  wpts.forEach(w => {
+    const isStart = w.sequence === 1;
+    const isLast  = w.sequence === wpts.length;
+    const bg      = isStart ? '#00c9b1' : isLast ? '#e85d04' : '#1a2e47';
+    const border  = isStart ? '#00c9b1' : isLast ? '#e85d04' : '#c9a84c';
+    const fg      = isStart||isLast ? '#fff' : '#c9a84c';
+    const sz      = isStart ? 34 : 26;
+
+    const icon = L.divIcon({
+      html:`<div style="
+        width:${sz}px;height:${sz}px;
+        background:${bg};border:2.5px solid ${border};border-radius:50%;
+        display:flex;align-items:center;justify-content:center;
+        font-size:${isStart?.72:.6}rem;font-weight:800;color:${fg};
+        box-shadow:0 3px 12px rgba(0,0,0,.45);
+        font-family:'Outfit',sans-serif;
+        ${isStart?'animation:markerPulse 2s infinite':''}
+      ">${isStart?'▶':w.sequence}</div>
+      ${isStart?`<style>@keyframes markerPulse{0%,100%{box-shadow:0 0 0 0 rgba(0,201,177,.5)}50%{box-shadow:0 0 0 8px rgba(0,201,177,0)}}</style>`:''}`,
+      className:'',
+      iconSize:[sz,sz], iconAnchor:[sz/2,sz/2], popupAnchor:[0,-sz/2+4]
+    });
+
+    L.marker([parseFloat(w.lat), parseFloat(w.lng)], {icon, zIndexOffset: isStart?1000:0})
+      .addTo(_leafletMap)
+      .bindPopup(`
+        <div style="font-family:'Outfit',sans-serif;min-width:160px;padding:2px 0">
+          <div style="font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+                      color:${isStart?'#00c9b1':isLast?'#e85d04':'#888'};margin-bottom:4px">
+            ${isStart?'🟢 Start':''}${isLast?'🔴 End':''} Stop ${w.sequence}
+          </div>
+          <div style="font-size:.92rem;font-weight:700;color:#111;margin-bottom:3px">${w.way_name}</div>
+          <div style="font-size:.64rem;font-family:monospace;color:#aaa">${Number(w.lat).toFixed(5)}, ${Number(w.lng).toFixed(5)}</div>
+        </div>`, {maxWidth:220, className:''});
+  });
+
+  // Fit to all markers with padding
+  if(latlngs.length > 1)
+    _leafletMap.fitBounds(L.latLngBounds(latlngs), {padding:[48,48]});
+
+  // Hide skeleton, force resize
+  document.getElementById('rmpMapLoading').style.display = 'none';
+  setTimeout(() => _leafletMap.invalidateSize(), 150);
+
+  if(latlngs.length < 2) return;
+
+  // ── Routing notice ────────────────────────────
+  const notice = L.control({position:'bottomleft'});
+  notice.onAdd = () => {
+    const d = L.DomUtil.create('div');
+    d.id = 'orsNotice';
+    d.innerHTML = `<div style="
+      background:rgba(10,22,34,.88);color:#00c9b1;
+      padding:.4rem .85rem;font-size:.7rem;
+      font-family:'Outfit',sans-serif;
+      border:1px solid rgba(0,201,177,.35);
+      border-radius:2px;display:flex;align-items:center;gap:6px">
+      <span style="animation:spin .8s linear infinite;display:inline-block">⟳</span>
+      Drawing road route via OpenRouteService…
+    </div>`;
+    return d;
+  };
+  notice.addTo(_leafletMap);
+
+  // ── Build closed-loop segments ────────────────
+  // 1→2, 2→3, … N→1
+  const totalStops = latlngs.length;
+  const segments   = Array.from({length:totalStops},(_,i)=>({
+    from: latlngs[i],
+    to:   latlngs[(i+1) % totalStops],
+    idx:  i
+  }));
+
+  let doneCount = 0, failCount = 0;
+
+  // Process segments sequentially to respect ORS rate limits (40 req/min)
+  // Sequential also ensures lines draw in order — looks cleaner
+  for(const seg of segments){
+    const {from, to, idx} = seg;
+    // ORS expects [lng, lat]
+    const body = {
+      coordinates: [
+        [from[1], from[0]],
+        [to[1],   to[0]]
+      ],
+      instructions: false
+    };
+
+    try {
+      const res = await fetch('https://api.openrouteservice.org/v2/directions/driving-car/geojson', {
+        method: 'POST',
+        headers: {
+          'Authorization': ORS_KEY,
+          'Content-Type':  'application/json',
+          'Accept':        'application/json, application/geo+json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      if(!res.ok) throw new Error(`ORS ${res.status}`);
+      const json = await res.json();
+      const coords = json.features?.[0]?.geometry?.coordinates;
+      if(!coords?.length) throw new Error('no geometry');
+
+      // Flip [lng,lat] → [lat,lng] for Leaflet
+      const roadLine = coords.map(([lng,lat]) => [lat, lng]);
+
+      // Pick color for this segment — cycles through gradient palette
+      const col = SEG_COLORS[idx % SEG_COLORS.length];
+
+      // Draw shadow (wider, darker) then the colored line on top — gives depth
+      L.polyline(roadLine, {
+        color:'#000', weight:7, opacity:.18, lineJoin:'round', lineCap:'round'
+      }).addTo(_leafletMap);
+
+      L.polyline(roadLine, {
+        color:   col,
+        weight:  5,
+        opacity: 0.92,
+        lineJoin:'round',
+        lineCap: 'round'
+      }).addTo(_leafletMap);
+
+      doneCount++;
+
+    } catch(e){
+      // Fallback: dashed straight line so route never breaks
+      const col = SEG_COLORS[idx % SEG_COLORS.length];
+      L.polyline([from, to], {
+        color:col, weight:3.5, opacity:.55, dashArray:'8 7',
+        lineJoin:'round', lineCap:'round'
+      }).addTo(_leafletMap);
+      failCount++;
+      console.warn(`Segment ${idx+1} fallback:`, e.message);
+    }
+
+    // Small delay between ORS calls — stays well under rate limit
+    await new Promise(r => setTimeout(r, 120));
+  }
+
+  // ── Remove notice, add legend ─────────────────
+  notice.remove();
+
+  const legend = L.control({position:'bottomright'});
+  legend.onAdd = () => {
+    const d = L.DomUtil.create('div');
+    d.innerHTML = `
+      <div style="background:rgba(10,22,34,.88);color:#9aafbe;
+                  padding:.55rem .9rem;font-size:.68rem;
+                  font-family:'Outfit',sans-serif;
+                  border:1px solid rgba(255,255,255,.08);
+                  border-radius:2px;line-height:2">
+        <div style="font-weight:700;color:#fff;margin-bottom:.2rem;letter-spacing:.06em;
+                    text-transform:uppercase;font-size:.6rem">
+          ${routeName}
+        </div>
+        <div><span style="display:inline-block;width:22px;height:4px;
+          background:linear-gradient(90deg,#00c9b1,#c9a84c,#e85d04);
+          border-radius:2px;vertical-align:middle;margin-right:5px"></span>
+          Road route · ${doneCount} seg</div>
+        ${failCount?`<div><span style="display:inline-block;width:22px;height:0;
+          border-top:3px dashed #c9a84c;vertical-align:middle;margin-right:5px"></span>
+          No road data (${failCount})</div>`:''}
+        <div style="color:var(--text3,#5a7488);font-size:.6rem;margin-top:.2rem">
+          © OpenRouteService · HeiGIT
+        </div>
+      </div>`;
+    return d;
+  };
+  legend.addTo(_leafletMap);
+}
+
+function focusWaypoint(lat, lng, name){
+  if(!_leafletMap) return;
+  _leafletMap.setView([parseFloat(lat), parseFloat(lng)], 16, { animate:true });
+}
+
+// ══════════════════════════════════════════════
+//  REALTIME — Driver live location on map
+//  Subscribes to agent_locations changes for the
+//  active movement. Updates a marker in real-time.
+// ══════════════════════════════════════════════
+let _driverMarker    = null;
+let _realtimeChannel = null;
+
+function startDriverTracking(movementId){
+  stopDriverTracking(); // clear any previous subscription
+
+  // Initial fetch — show current position right away
+  _db.from('agent_locations')
+    .select('*')
+    .eq('movement_id', movementId)
+    .eq('is_online', true)
+    .then(({ data }) => {
+      if(data?.length) _updateDriverMarker(data[0]);
+    });
+
+  // Subscribe to realtime changes
+  _realtimeChannel = _db
+    .channel(`driver-loc-${movementId}`)
+    .on('postgres_changes', {
+      event:  '*',
+      schema: 'public',
+      table:  'agent_locations',
+      filter: `movement_id=eq.${movementId}`
+    }, payload => {
+      const row = payload.new;
+      if(row?.is_online && row.lat && row.lng){
+        _updateDriverMarker(row);
+      } else if(row && !row.is_online){
+        _removeDriverMarker();
+      }
+    })
+    .subscribe();
+}
+
+function stopDriverTracking(){
+  if(_realtimeChannel){
+    _db.removeChannel(_realtimeChannel);
+    _realtimeChannel = null;
+  }
+  _removeDriverMarker();
+}
+
+function _updateDriverMarker(row){
+  if(!_leafletMap) return;
+  const pos = [parseFloat(row.lat), parseFloat(row.lng)];
+
+  if(_driverMarker){
+    _driverMarker.setLatLng(pos);
+  } else {
+    const icon = L.divIcon({
+      html:`<div style="position:relative;width:44px;height:44px;display:flex;align-items:center;justify-content:center">
+        <div style="position:absolute;width:44px;height:44px;border-radius:50%;
+          background:rgba(0,201,177,.18);border:1.5px solid rgba(0,201,177,.4);
+          animation:driverPulse 2s ease-in-out infinite"></div>
+        <div style="width:20px;height:20px;border-radius:50%;background:#00c9b1;
+          border:2.5px solid #fff;box-shadow:0 2px 10px rgba(0,201,177,.7);
+          display:flex;align-items:center;justify-content:center;position:relative">
+          <span style="font-size:9px">🚐</span>
+        </div>
+      </div>
+      <style>@keyframes driverPulse{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.4);opacity:0}}</style>`,
+      className: '',
+      iconSize:   [44, 44],
+      iconAnchor: [22, 22],
+      popupAnchor:[0, -22]
+    });
+
+    _driverMarker = L.marker(pos, { icon, zIndexOffset: 2000 })
+      .addTo(_leafletMap)
+      .bindPopup(`<div style="font-family:'Outfit',sans-serif">
+        <div style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#00c9b1;margin-bottom:3px">🟢 Driver Live</div>
+        <div style="font-size:.78rem;color:#333">Location updating in real-time</div>
+      </div>`, { maxWidth: 180 });
+  }
+
+  // Gently pan map to keep driver in view (only if far off screen)
+  if(!_leafletMap.getBounds().contains(pos)){
+    _leafletMap.panTo(pos, { animate:true, duration:.8 });
+  }
+}
+
+function _removeDriverMarker(){
+  if(_driverMarker && _leafletMap){
+    _leafletMap.removeLayer(_driverMarker);
+    _driverMarker = null;
+  }
+}
+
+function closeRouteMap(){
+  stopDriverTracking();
+  document.getElementById('routeMapPanel').style.display = 'none';
+  document.querySelectorAll('.route-card').forEach(c => c.classList.remove('selected'));
+  _activeRouteId = null;
+  if(_leafletMap){ _leafletMap.remove(); _leafletMap = null; }
+}
+</script>
+</body>
+</html>
